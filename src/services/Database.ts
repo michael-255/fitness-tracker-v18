@@ -34,6 +34,7 @@ class Database extends Dexie {
     const defaultSettings: Readonly<{
       [key in Key]: any
     }> = {
+      [Key.USER_HEIGHT]: 70,
       [Key.SHOW_WELCOME]: true,
       [Key.SHOW_DESCRIPTIONS]: true,
       [Key.DARK_MODE]: true,

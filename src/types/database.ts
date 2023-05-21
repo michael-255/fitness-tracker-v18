@@ -81,6 +81,7 @@ export enum Severity {
  * Defines key strings for all valid settings the app supports.
  */
 export enum Key {
+  USER_HEIGHT = 'user-height-inches',
   SHOW_WELCOME = 'show-welcome-overlay',
   SHOW_DESCRIPTIONS = 'show-dashboard-descriptions',
   DARK_MODE = 'dark-mode',

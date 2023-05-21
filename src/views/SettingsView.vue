@@ -27,6 +27,7 @@ const { goToData } = useRoutables()
 const typeOptions = DataSchema.getTypeOptions()
 const settings: Ref<Setting[]> = ref([])
 const logRetentionIndex: Ref<number> = ref(0)
+const heightInches: Ref<number> = ref(0)
 const importFile: Ref<any> = ref(null)
 const exportModel: Ref<Type[]> = ref([])
 const exportOptions = [...typeOptions]
@@ -39,8 +40,11 @@ const deleteModel = ref(deleteOptions.value[0])
 const subscription = DB.liveSettings().subscribe({
   next: (liveSettings) => {
     settings.value = liveSettings
+
     const logRetentionTime = liveSettings.find((s) => s.key === Key.LOG_RETENTION_TIME)?.value
     logRetentionIndex.value = Object.values(LogRetention).findIndex((i) => i === logRetentionTime)
+
+    heightInches.value = settings.value.find((s) => s.key === Key.USER_HEIGHT)?.value as number
   },
   error: (error) => {
     log.error('Error fetching live Settings', error)
@@ -278,6 +282,35 @@ function getSettingValue(key: Key) {
 
 <template>
   <ResponsivePage :bannerIcon="Icon.SETTINGS" bannerTitle="Settings">
+    <!-- User Information -->
+    <QCard class="q-mb-md">
+      <QCardSection>
+        <div class="text-h6 q-mb-md">User Information</div>
+
+        <p>
+          Your height is used for the BMI calculation when updating your body weight. This value
+          will be defaulted if nothing is provided (70 = 5'10").
+        </p>
+
+        <p class="text-h6">Height</p>
+
+        <!-- Note: v-model.number for number types -->
+        <QInput
+          v-model.number="heightInches"
+          ref="inputRef"
+          :rules="[(val: number) => (val >= 1 && val <= 120) || '0-120 or blank']"
+          hint="Auto Saved"
+          type="number"
+          step="0.25"
+          placeholder="Total Inches"
+          dense
+          outlined
+          color="primary"
+          @update:model-value="DB.setSetting(Key.USER_HEIGHT, $event)"
+        />
+      </QCardSection>
+    </QCard>
+
     <!-- Options -->
     <QCard class="q-mb-md">
       <QCardSection>
