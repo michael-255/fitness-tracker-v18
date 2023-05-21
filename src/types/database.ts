@@ -3,13 +3,15 @@ import type { Icon } from '@/types/icons'
 import type { QTableColumn } from 'quasar'
 import type { defineAsyncComponent } from 'vue'
 import type {
-  exampleChildValidator,
-  exampleParentValidator,
   logValidator,
-  recordValidator,
   settingValidator,
-  testChildValidator,
-  testParentValidator,
+  workoutValidator,
+  workoutResultValidator,
+  exerciseValidator,
+  exerciseResultValidator,
+  measurementValidator,
+  measurementResultValidator,
+  recordValidator,
 } from '@/services/validators'
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -25,10 +27,12 @@ import type {
 export enum Type {
   LOG = 'log',
   SETTING = 'setting',
-  EXAMPLE_PARENT = 'example-parent',
-  EXAMPLE_CHILD = 'example-child',
-  TEST_PARENT = 'test-parent',
-  TEST_CHILD = 'test-child',
+  WORKOUT = 'workout',
+  EXERCISE = 'exercise',
+  MEASUREMENT = 'measurement',
+  WORKOUT_RESULT = 'workout-result',
+  EXERCISE_RESULT = 'exercise-result',
+  MEASUREMENT_RESULT = 'measurement-result',
 }
 
 /**
@@ -53,12 +57,14 @@ export enum Field {
   DESC = 'desc',
   ENABLED = 'enabled',
   FAVORITED = 'favorited',
+  ACTIVE = 'active',
   // CHILD
   PARENT_ID = 'parentId',
   NOTE = 'note',
   // RECORD SPECIFIC
-  TEST_IDS = 'testIds',
   PERCENT = 'percent',
+  INCHES = 'inches',
+  LBS = 'lbs',
 }
 
 /**
@@ -92,10 +98,16 @@ export enum Key {
 // Infering user record types from the validators
 export type Log = InferType<typeof logValidator>
 export type Setting = InferType<typeof settingValidator>
-export type ExampleParent = InferType<typeof exampleParentValidator>
-export type ExampleChild = InferType<typeof exampleChildValidator>
-export type TestParent = InferType<typeof testParentValidator>
-export type TestChild = InferType<typeof testChildValidator>
+
+export type Workout = InferType<typeof workoutValidator>
+export type Exercise = InferType<typeof exerciseValidator>
+export type Measurement = InferType<typeof measurementValidator>
+
+// TODO - These may have to be partials to handle unused fields
+export type WorkoutResult = InferType<typeof workoutResultValidator>
+export type ExerciseResult = InferType<typeof exerciseResultValidator>
+export type MeasurementResult = InferType<typeof measurementResultValidator>
+
 export type Record = Partial<InferType<typeof recordValidator>>
 
 ///////////////////////////////////////////////////////////////////////////////

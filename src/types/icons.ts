@@ -27,9 +27,9 @@ export enum Icon {
   LOGS = 'plagiarism',
   CHARTS = 'bar_chart',
   RECORDS = 'storage',
-  EXAMPLES = 'smart_toy',
-  TESTS = 'cruelty_free',
-  PERF = 'speed',
+  WORKOUT = 'assignment',
+  EXERCISE = 'fitness_center',
+  MEASUREMENT = 'straighten',
   // Misc
   LOCK = 'lock',
   NOTE = 'sticky_note_2',

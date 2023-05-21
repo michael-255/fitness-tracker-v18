@@ -12,7 +12,6 @@ import {
   textValidator,
   keyValidator,
   valueValidator,
-  testIdsValidator,
 } from '@/services/validators'
 import { Field, Key, Severity, type FieldProps } from '@/types/database'
 import { Limit } from '@/types/general'
@@ -224,17 +223,6 @@ const noteField: Readonly<FieldProps> = {
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-const testIdsField: Readonly<FieldProps> = {
-  field: Field.TEST_IDS,
-  label: 'Tests',
-  desc: 'Tests that are associated with the Example record.',
-  getDefault: () => [],
-  validator: testIdsValidator,
-  validationMessage: '* Required',
-  inspectFormat: (val: string[]) => val?.join(', ') || '-',
-  component: defineAsyncComponent(() => import('@/components/inputs/TestIdsInput.vue')),
-}
-
 const percentField: Readonly<FieldProps> = {
   field: Field.PERCENT,
   label: 'Percentage',
@@ -252,9 +240,7 @@ const percentField: Readonly<FieldProps> = {
 ///////////////////////////////////////////////////////////////////////////////
 
 const coreFields: FieldProps[] = [idField, timestampField]
-
 const parentFields: FieldProps[] = [nameField, descField, enabledField, favoritedField]
-
 const childFields: FieldProps[] = [parentIdField, noteField]
 
 export const logFields: FieldProps[] = [
@@ -266,13 +252,12 @@ export const logFields: FieldProps[] = [
   messageField,
   stackField,
 ]
-
 export const settingFields: FieldProps[] = [keyField, valueField]
 
-export const exampleParentFields: FieldProps[] = [...coreFields, ...parentFields, testIdsField]
+export const workoutFields: FieldProps[] = [...coreFields, ...parentFields]
+export const exerciseFields: FieldProps[] = [...coreFields, ...parentFields]
+export const measurementFields: FieldProps[] = [...coreFields, ...parentFields]
 
-export const exampleChildFields: FieldProps[] = [...coreFields, ...childFields]
-
-export const testParentFields: FieldProps[] = [...coreFields, ...parentFields]
-
-export const testChildFields: FieldProps[] = [...coreFields, ...childFields, percentField]
+export const workoutResultFields: FieldProps[] = [...coreFields, ...childFields]
+export const exerciseResultFields: FieldProps[] = [...coreFields, ...childFields]
+export const measurementResultFields: FieldProps[] = [...coreFields, ...childFields]

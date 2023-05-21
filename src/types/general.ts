@@ -1,12 +1,5 @@
-import { Type, type Field } from '@/types/database'
-import type {
-  Log,
-  Setting,
-  TestChild,
-  TestParent,
-  ExampleChild,
-  ExampleParent,
-} from '@/types/database'
+import { Type, type Field, type Record } from '@/types/database'
+import type { Log, Setting } from '@/types/database'
 
 /**
  * App display name.
@@ -81,10 +74,12 @@ export type BackupData = {
   backupTimestamp: number
   [Type.LOG]: Log[]
   [Type.SETTING]: Setting[]
-  [Type.EXAMPLE_PARENT]: ExampleParent[]
-  [Type.EXAMPLE_CHILD]: ExampleChild[]
-  [Type.TEST_PARENT]: TestParent[]
-  [Type.TEST_CHILD]: TestChild[]
+  [Type.WORKOUT]: Record[] // TODO
+  [Type.EXERCISE]: Record[] // TODO
+  [Type.MEASUREMENT]: Record[] // TODO
+  [Type.WORKOUT_RESULT]: Record[] // TODO
+  [Type.EXERCISE_RESULT]: Record[] // TODO
+  [Type.MEASUREMENT_RESULT]: Record[] // TODO
 }
 
 /**

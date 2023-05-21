@@ -185,12 +185,6 @@ const noteColumn: Readonly<QTableColumn> = {
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-const testIdsColumn: Readonly<QTableColumn> = {
-  ...makeStandardColumn(Field.TEST_IDS),
-  label: 'Tests',
-  format: (val: string[]) => truncateString(JSON.stringify(val), 30, '...'),
-}
-
 const percentColumn: Readonly<QTableColumn> = {
   ...makeStandardColumn(Field.PERCENT),
   label: 'Percentage',
@@ -208,14 +202,12 @@ export const hiddenColumnNames: Readonly<string[]> = [hiddenIdColumn, hiddenAuto
 )
 
 const coreColumns: Readonly<QTableColumn[]> = [idColumn, timestampColumn]
-
 const parentColumns: Readonly<QTableColumn[]> = [
   nameColumn,
   descColumn,
   enabledColumn,
   favoritedColumn,
 ]
-
 const childColumns: Readonly<QTableColumn[]> = [parentIdColumn, noteColumn]
 
 export const logColumns: QTableColumn[] = [
@@ -228,23 +220,24 @@ export const logColumns: QTableColumn[] = [
   messageColumn,
   stackColumn,
 ]
-
 export const settingColumns: QTableColumn[] = [keyColumn, valueColumn]
 
-export const exampleParentColumns: QTableColumn[] = [
-  hiddenIdColumn,
-  ...coreColumns,
-  ...parentColumns,
-  testIdsColumn,
-]
+export const workoutColumns: QTableColumn[] = [hiddenIdColumn, ...coreColumns, ...parentColumns]
+export const exerciseColumns: QTableColumn[] = [hiddenIdColumn, ...coreColumns, ...parentColumns]
+export const measurementColumns: QTableColumn[] = [hiddenIdColumn, ...coreColumns, ...parentColumns]
 
-export const exampleChildColumns: QTableColumn[] = [hiddenIdColumn, ...coreColumns, ...childColumns]
-
-export const testParentColumns: QTableColumn[] = [hiddenIdColumn, ...coreColumns, ...parentColumns]
-
-export const testChildColumns: QTableColumn[] = [
+export const workoutResultColumns: QTableColumn[] = [
   hiddenIdColumn,
   ...coreColumns,
   ...childColumns,
-  percentColumn,
+]
+export const exerciseResultColumns: QTableColumn[] = [
+  hiddenIdColumn,
+  ...coreColumns,
+  ...childColumns,
+]
+export const measurementResultColumns: QTableColumn[] = [
+  hiddenIdColumn,
+  ...coreColumns,
+  ...childColumns,
 ]

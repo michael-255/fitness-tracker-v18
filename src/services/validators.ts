@@ -67,6 +67,7 @@ const parent = object({
   [Field.DESC]: textAreaValidator,
   [Field.ENABLED]: booleanValidator,
   [Field.FAVORITED]: booleanValidator,
+  [Field.ACTIVE]: booleanValidator,
 }).noUnknown()
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -86,15 +87,19 @@ const child = object({
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-export const testIdsValidator = array().of(idValidator).required()
 export const percentValidator = number().required().min(0).max(100)
+export const zeroPlusValidator = number().required().min(0).max(Number.MAX_SAFE_INTEGER)
 
-const exampleParent = object({
-  [Field.TEST_IDS]: testIdsValidator,
-}).noUnknown()
+const workout = object({}).noUnknown()
+const exercise = object({}).noUnknown()
+const measurement = object({}).noUnknown()
 
-const testChild = object({
+const workoutResult = object({}).noUnknown()
+const exerciseResult = object({}).noUnknown()
+const measurementResult = object({
   [Field.PERCENT]: percentValidator,
+  [Field.INCHES]: zeroPlusValidator,
+  [Field.LBS]: zeroPlusValidator,
 }).noUnknown()
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -105,15 +110,27 @@ const testChild = object({
 
 export const logValidator = mixed().concat(log)
 export const settingValidator = mixed().concat(setting)
-export const exampleParentValidator = mixed().concat(core).concat(parent).concat(exampleParent)
-export const exampleChildValidator = mixed().concat(core).concat(child)
-export const testParentValidator = mixed().concat(core).concat(parent)
-export const testChildValidator = mixed().concat(core).concat(child).concat(testChild)
+
+export const workoutValidator = mixed().concat(core).concat(parent).concat(workout)
+export const exerciseValidator = mixed().concat(core).concat(parent).concat(exercise)
+export const measurementValidator = mixed().concat(core).concat(parent).concat(measurement)
+
+export const workoutResultValidator = mixed().concat(core).concat(parent).concat(workoutResult)
+export const exerciseResultValidator = mixed().concat(core).concat(parent).concat(exerciseResult)
+export const measurementResultValidator = mixed()
+  .concat(core)
+  .concat(parent)
+  .concat(measurementResult)
+
 export const recordValidator = mixed()
   .concat(log)
   .concat(setting)
   .concat(core)
   .concat(parent)
   .concat(child)
-  .concat(exampleParent)
-  .concat(testChild)
+  .concat(workout)
+  .concat(exercise)
+  .concat(measurement)
+  .concat(workoutResult)
+  .concat(exerciseResult)
+  .concat(measurementResult)
