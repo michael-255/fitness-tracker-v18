@@ -89,9 +89,7 @@ class Database extends Dexie {
         await this.getDashboardParents(Type.TEST_PARENT),
       ])
 
-      const dashboardCards: { [key in Type]: DashboardListCardProps[] } = Object.values(
-        Type
-      ).reduce((acc, type) => {
+      const dashboardCards: { [key in Type]: DashboardListCardProps[] } = Object.values(Type).reduce((acc, type) => {
         acc[type] = []
         return acc
       }, {} as { [key in Type]: DashboardListCardProps[] })
@@ -177,9 +175,9 @@ class Database extends Dexie {
     if (skippedRecords.length > 0) {
       // Error for the frontend to report if any records were skipped
       throw new Error(
-        `Records skipped due to validation failures (${
-          skippedRecords.length
-        }): ${skippedRecords.map((r) => String(r.id))}`
+        `Records skipped due to validation failures (${skippedRecords.length}): ${skippedRecords.map((r) =>
+          String(r.id)
+        )}`
       )
     }
   }
@@ -262,10 +260,7 @@ class Database extends Dexie {
    * @param parentId
    */
   async getParentChildren(childType: Type, parentId: string) {
-    return await this.table(childType)
-      .where(Field.PARENT_ID)
-      .equals(parentId)
-      .sortBy(Field.TIMESTAMP)
+    return await this.table(childType).where(Field.PARENT_ID).equals(parentId).sortBy(Field.TIMESTAMP)
   }
 
   /**
@@ -283,10 +278,7 @@ class Database extends Dexie {
 
     // Build dashboard list cards
     for await (const r of records) {
-      const previous = (await this.getPreviousChild(
-        DataSchema.getChildType(type) as Type,
-        r.id
-      )) as Record
+      const previous = (await this.getPreviousChild(DataSchema.getChildType(type) as Type, r.id)) as Record
 
       const dashboardCard: DashboardListCardProps = {
         type,
