@@ -1,11 +1,18 @@
 # Fitness Tracker v18
 
-Fitness Tracker web app is used for tracking workouts, exercises, and measurements. You can view charts of your progress
-and export your data at any time. All of your data is stored locally on your device.
+Fitness Tracker web app is used for tracking workouts, exercises, and measurements. You can view
+charts of your progress and export your data at any time. All of your data is stored locally on your
+device.
 
 ## TODOs
 
--
+Update `CORE` code files for Fitness Tracker v18 (reference `fitness-web-app-2023`):
+
+- [ ] Workouts, Exercises, Measurements
+- [ ] Header Color?
+- [ ] Database
+- [ ] Validators
+- [ ] DataSchema
 
 ## Table of Contents
 
@@ -189,7 +196,10 @@ Details on the steps I took to create this project.
 
    // https://vitejs.dev/config/
    export default defineConfig({
-     plugins: [vue({ template: { transformAssetUrls } }), quasar({ autoImportComponentCase: 'pascal' })],
+     plugins: [
+       vue({ template: { transformAssetUrls } }),
+       quasar({ autoImportComponentCase: 'pascal' }),
+     ],
      resolve: {
        alias: {
          '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -205,8 +215,9 @@ Details on the steps I took to create this project.
    })
    ```
 
-1. Additional scripts for `package.json` file. The `deploy` script makes a copy of the `index.html` in `dist` as
-   `404.html` to address complications related to routing. This let's you avoid using hash based routing.
+1. Additional scripts for `package.json` file. The `deploy` script makes a copy of the `index.html`
+   in `dist` as `404.html` to address complications related to routing. This let's you avoid using
+   hash based routing.
 
    ```json
    {
@@ -319,24 +330,25 @@ Details on the steps I took to create this project.
 
 ### Recommended IDE Setup
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and
-disable Vetur) +
+[VSCode](https://code.visualstudio.com/) +
+[Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) +
 [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
 
 ### Type Support for `.vue` Imports in TS
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for
-type checking. In editors, we need
-[TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to
-make the TypeScript language service aware of `.vue` types.
+TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI
+with `vue-tsc` for type checking. In editors, we need
+[TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin)
+to make the TypeScript language service aware of `.vue` types.
 
 If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a
-[Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more
-performant. You can enable it by the following steps:
+[Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669)
+that is more performant. You can enable it by the following steps:
 
 1. Disable the built-in TypeScript Extension
    1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
+   2. Find `TypeScript and JavaScript Language Features`, right click and select
+      `Disable (Workspace)`
 2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
 
 ### Customize configuration
@@ -348,6 +360,8 @@ See [Vite Configuration Reference](https://vitejs.dev/config/).
 App favicon was generated using the following graphics from Twemoji:
 
 - Graphics Title: 1f3cb-fe0f-200d-2642-fe0f.svg
-- Graphics Author: Copyright 2020 Twitter, Inc and other contributors (<https://github.com/twitter/twemoji>)
-- Graphics Source: <https://github.com/twitter/twemoji/blob/master/assets/svg/1f3cb-fe0f-200d-2642-fe0f.svg>
+- Graphics Author: Copyright 2020 Twitter, Inc and other contributors
+  (<https://github.com/twitter/twemoji>)
+- Graphics Source:
+  <https://github.com/twitter/twemoji/blob/master/assets/svg/1f3cb-fe0f-200d-2642-fe0f.svg>
 - Graphics License: CC-BY 4.0 (<https://creativecommons.org/licenses/by/4.0/>)
