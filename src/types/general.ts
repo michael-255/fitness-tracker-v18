@@ -17,9 +17,7 @@ export const AppName = 'Fitness Tracker'
  * App description used in useMeta and About page.
  */
 export const AppDescription = `
-${AppName} is a Vue 3 Typescript project created by michael-255 on GitHub.
-This project was built to assist with tracking workouts, exercises, and measurements.
-It is publicly available using the MIT License.
+${AppName} is used for tracking workouts, exercises, and measurements. You can view charts of your progress and export your data at any time.
 `
 
 /**
