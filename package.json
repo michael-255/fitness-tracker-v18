@@ -2,7 +2,7 @@
   "name": "fitness-tracker-v18",
   "description": "Fitness Tracker app to assist with tracking workouts, exercises, and measurements.",
   "author": "Michael Joy",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
