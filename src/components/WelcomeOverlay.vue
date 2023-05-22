@@ -45,7 +45,10 @@ async function onCloseWelcomeOverlay() {
         <p class="text-h6">Welcome to {{ AppName }}</p>
 
         <!-- Information -->
-        <p>This app provides a foundation to build your own web apps.</p>
+        <p>
+          This app provides you with the ability to manage and track workouts, exercises, and
+          measurements.
+        </p>
 
         <!-- Favorites -->
         <div class="q-mb-md">

@@ -27,7 +27,8 @@ const { goToData } = useRoutables()
 const typeOptions = DataSchema.getTypeOptions()
 const settings: Ref<Setting[]> = ref([])
 const logRetentionIndex: Ref<number> = ref(0)
-const heightInches: Ref<number> = ref(0)
+const heightInputRef: Ref<any> = ref(null)
+const heightInches: Ref<number> = ref(1)
 const importFile: Ref<any> = ref(null)
 const exportModel: Ref<Type[]> = ref([])
 const exportOptions = [...typeOptions]
@@ -278,6 +279,17 @@ async function onDeleteDatabase() {
 function getSettingValue(key: Key) {
   return settings.value.find((s) => s.key === key)?.value
 }
+
+/**
+ * Updates the user height in the database when the input is valid.
+ */
+async function updateHeight() {
+  const isValid = !!heightInputRef?.value?.validate()
+
+  if (isValid) {
+    await DB.setSetting(Key.USER_HEIGHT, heightInches.value)
+  }
+}
 </script>
 
 <template>
@@ -288,8 +300,9 @@ function getSettingValue(key: Key) {
         <div class="text-h6 q-mb-md">User Information</div>
 
         <p>
-          Your height is used for the BMI calculation when updating your body weight. This value
-          will be defaulted if nothing is provided (70 = 5'10").
+          Your height is used for the BMI calculation when updating your body weight. Height will
+          default to 70 inches if not provided. For reference, a height of 5'10" is equal to 70
+          inches.
         </p>
 
         <p class="text-h6">Height</p>
@@ -297,8 +310,8 @@ function getSettingValue(key: Key) {
         <!-- Note: v-model.number for number types -->
         <QInput
           v-model.number="heightInches"
-          ref="inputRef"
-          :rules="[(val: number) => (val >= 1 && val <= 120) || '0-120 or blank']"
+          ref="heightInputRef"
+          :rules="[(val: number) => (val >= 1 && val <= 120) || 'Must be 1-120 or blank']"
           hint="Auto Saved"
           type="number"
           step="0.25"
@@ -306,7 +319,7 @@ function getSettingValue(key: Key) {
           dense
           outlined
           color="primary"
-          @update:model-value="DB.setSetting(Key.USER_HEIGHT, $event)"
+          @blur="updateHeight()"
         />
       </QCardSection>
     </QCard>
