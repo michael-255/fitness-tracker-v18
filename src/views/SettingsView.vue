@@ -314,7 +314,6 @@ async function updateHeight() {
           :rules="[(val: number) => (val >= 1 && val <= 120) || 'Must be 1-120 or blank']"
           hint="Auto Saved"
           type="number"
-          step="0.25"
           placeholder="Total Inches"
           dense
           outlined

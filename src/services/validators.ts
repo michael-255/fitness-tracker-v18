@@ -1,4 +1,4 @@
-import { Type, Field, Severity } from '@/types/database'
+import { Type, Field, Severity, ExerciseInput, MeasurementInput } from '@/types/database'
 import { mixed, object, array, string, number, boolean } from 'yup'
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -87,19 +87,49 @@ const child = object({
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
+export const idArrayValidator = array().of(idValidator).required()
 export const percentValidator = number().required().min(0).max(100)
-export const zeroPlusValidator = number().required().min(0).max(Number.MAX_SAFE_INTEGER)
+export const zeroPlusNumberValidator = number().required().min(0).max(Number.MAX_SAFE_INTEGER)
+export const setNumberArrayValidator = array().of(zeroPlusNumberValidator).required()
+export const heightWeightValidator = array()
+  .of(number().required().min(0).max(1000))
+  .length(2)
+  .required()
+// TODO - Need to allow 0 elements
+export const exerciseInputsValidator = array()
+  .of(string().required().oneOf(Object.values(ExerciseInput)))
+  .required()
+export const measurementInputValidator = string().required().oneOf(Object.values(MeasurementInput))
 
-const workout = object({}).noUnknown()
-const exercise = object({}).noUnknown()
-const measurement = object({}).noUnknown()
+const workout = object({
+  [Field.EXERCISE_IDS]: idArrayValidator,
+}).noUnknown()
+const exercise = object({
+  [Field.EXERCISE_INPUTS]: exerciseInputsValidator,
+}).noUnknown()
+const measurement = object({
+  [Field.MEASUREMENT_INPUT]: measurementInputValidator,
+}).noUnknown()
 
-const workoutResult = object({}).noUnknown()
-const exerciseResult = object({}).noUnknown()
+const workoutResult = object({
+  [Field.FINISHED_TIMESTAMP]: timestampValidator,
+  [Field.EXERCISE_RESULT_IDS]: idArrayValidator,
+}).noUnknown()
+const exerciseResult = object({
+  [Field.REPS]: setNumberArrayValidator,
+  [Field.WEIGHT_LBS]: setNumberArrayValidator,
+  [Field.DISTANCE_MILES]: setNumberArrayValidator,
+  [Field.DURATION_MINUTES]: setNumberArrayValidator,
+  [Field.WATTS]: setNumberArrayValidator,
+  [Field.SPEED_MPH]: setNumberArrayValidator,
+  [Field.CALORIES]: setNumberArrayValidator,
+  [Field.RESISTANCE]: setNumberArrayValidator,
+}).noUnknown()
 const measurementResult = object({
+  [Field.HEIGHT_WEIGHT_LBS]: heightWeightValidator,
   [Field.PERCENT]: percentValidator,
-  [Field.INCHES]: zeroPlusValidator,
-  [Field.LBS]: zeroPlusValidator,
+  [Field.INCHES]: zeroPlusNumberValidator,
+  [Field.LBS]: zeroPlusNumberValidator,
 }).noUnknown()
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -115,11 +145,11 @@ export const workoutValidator = mixed().concat(core).concat(parent).concat(worko
 export const exerciseValidator = mixed().concat(core).concat(parent).concat(exercise)
 export const measurementValidator = mixed().concat(core).concat(parent).concat(measurement)
 
-export const workoutResultValidator = mixed().concat(core).concat(parent).concat(workoutResult)
-export const exerciseResultValidator = mixed().concat(core).concat(parent).concat(exerciseResult)
+export const workoutResultValidator = mixed().concat(core).concat(child).concat(workoutResult)
+export const exerciseResultValidator = mixed().concat(core).concat(child).concat(exerciseResult)
 export const measurementResultValidator = mixed()
   .concat(core)
-  .concat(parent)
+  .concat(child)
   .concat(measurementResult)
 
 export const recordValidator = mixed()

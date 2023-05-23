@@ -6,13 +6,10 @@ device.
 
 ## TODOs
 
-Update `CORE` code files for Fitness Tracker v18 (reference `fitness-web-app-2023`):
+First pass at validators and other services is done. Need to work on input components.
 
-- [ ] Workouts, Exercises, Measurements
-- [ ] Header Color?
-- [ ] Database
-- [ ] Validators
-- [ ] DataSchema
+- [ ] Build input components for fields
+- [ ] Try to combine some together if possible
 
 ## Table of Contents
 

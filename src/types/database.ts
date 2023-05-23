@@ -57,11 +57,30 @@ export enum Field {
   DESC = 'desc',
   ENABLED = 'enabled',
   FAVORITED = 'favorited',
-  ACTIVE = 'active',
   // CHILD
   PARENT_ID = 'parentId',
   NOTE = 'note',
-  // RECORD SPECIFIC
+  ACTIVE = 'active',
+  // WORKOUT
+  EXERCISE_IDS = 'exerciseIds',
+  // EXERCISE
+  EXERCISE_INPUTS = 'exerciseInputs',
+  // Measurements
+  MEASUREMENT_INPUT = 'measurementInput',
+  // WORKOUT RESULT
+  FINISHED_TIMESTAMP = 'finishedTimestamp',
+  EXERCISE_RESULT_IDS = 'exerciseResultIds',
+  // EXERCISE RESULT
+  REPS = 'reps',
+  WEIGHT_LBS = 'weightLbs',
+  DISTANCE_MILES = 'distanceMiles',
+  DURATION_MINUTES = 'durationMinutes',
+  WATTS = 'watts',
+  SPEED_MPH = 'speedMph',
+  CALORIES = 'calories',
+  RESISTANCE = 'resistance',
+  // MEASUREMENT RESULT
+  HEIGHT_WEIGHT_LBS = 'heightWeightLbs',
   PERCENT = 'percent',
   INCHES = 'inches',
   LBS = 'lbs',
@@ -88,6 +107,31 @@ export enum Key {
   SHOW_CONSOLE_LOGS = 'show-console-logs',
   SHOW_INFO_MESSAGES = 'show-info-messages',
   LOG_RETENTION_TIME = 'log-retention-time',
+}
+
+/**
+ * Defines available measurement input types.
+ */
+export enum MeasurementInput {
+  BODY_WEIGHT = 'Body Weight (lbs)', // Uses HEIGHT_WEIGHT_LBS
+  PERCENT = 'Percentage',
+  INCHES = 'Inches',
+  LBS = 'Lbs',
+}
+
+/**
+ * Defines available exercise input types.
+ */
+export enum ExerciseInput {
+  NO_SETS = 'No Sets',
+  REPS = 'Reps',
+  WEIGHT_LBS = 'Weight (lbs)',
+  DISTANCE_MILES = 'Distance (miles)',
+  DURATION_MINUTES = 'Duration (minutes)',
+  WATTS = 'Avg. Watts',
+  SPEED_MPH = 'Avg. Speed (mph)',
+  CALORIES = 'Calories Burned',
+  RESISTANCE = 'Resistence',
 }
 
 ///////////////////////////////////////////////////////////////////////////////

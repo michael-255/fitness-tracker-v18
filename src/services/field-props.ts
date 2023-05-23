@@ -12,8 +12,21 @@ import {
   textValidator,
   keyValidator,
   valueValidator,
+  idArrayValidator,
+  exerciseInputsValidator,
+  measurementInputValidator,
+  zeroPlusNumberValidator,
+  heightWeightValidator,
+  setNumberArrayValidator,
 } from '@/services/validators'
-import { Field, Key, Severity, type FieldProps } from '@/types/database'
+import {
+  Field,
+  Key,
+  Severity,
+  type FieldProps,
+  MeasurementInput,
+  ExerciseInput,
+} from '@/types/database'
 import { Limit } from '@/types/general'
 import { getDisplayDate } from '@/utils/common'
 import { defineAsyncComponent } from 'vue'
@@ -217,11 +230,195 @@ const noteField: Readonly<FieldProps> = {
   component: defineAsyncComponent(() => import('@/components/inputs/TextAreaInput.vue')),
 }
 
+const activeField: Readonly<FieldProps> = {
+  field: Field.ACTIVE,
+  label: 'Active',
+  getDefault: () => false,
+  validator: booleanValidator,
+  validationMessage: '* Required',
+  inspectFormat: (val: boolean) => (val ? 'Yes' : 'No'),
+  // Not rendered
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-//     RECORD SPECIFIC                                                       //
+//     WORKOUT                                                               //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
+
+const exerciseIdsField: Readonly<FieldProps> = {
+  field: Field.EXERCISE_IDS,
+  label: 'Exercises',
+  desc: 'Exercises to be performed in the workout in the order selected.',
+  getDefault: () => [],
+  validator: idArrayValidator,
+  validationMessage: 'Invalid', // TODO
+  inspectFormat: (val: string[]) => val?.join(', ') || '-',
+  // component: defineAsyncComponent(() => import('@/components/inputs/ExerciseIdsInput.vue')),
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+//     EXERCISE                                                              //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+const exerciseInputsField: Readonly<FieldProps> = {
+  field: Field.EXERCISE_INPUTS,
+  label: 'Exercise Inputs',
+  desc: 'Exercise input types to be recorded for the record. Leave blank if you want the record to be purely instructional during a workout.',
+  getDefault: () => [],
+  validator: exerciseInputsValidator,
+  validationMessage: 'Invalid', // TODO
+  inspectFormat: (val: ExerciseInput[]) => val?.join(', ') || '-',
+  // component: defineAsyncComponent(() => import('@/components/inputs/ExerciseInputsInput.vue')),
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+//     MEASUREMENT                                                           //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+const measurementInputField: Readonly<FieldProps> = {
+  field: Field.MEASUREMENT_INPUT,
+  label: 'Measurement Inputs',
+  desc: 'Measurement input type to be recorded for this record.',
+  getDefault: () => [],
+  validator: measurementInputValidator,
+  validationMessage: 'Invalid', // TODO
+  inspectFormat: (val: MeasurementInput) => `${val || '-'}`,
+  // Not rendered
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+//     WORKOUT RESULT                                                        //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+const finishedTimestampField: Readonly<FieldProps> = {
+  field: Field.FINISHED_TIMESTAMP,
+  label: 'Finished Date',
+  getDefault: () => undefined,
+  validator: timestampValidator,
+  validationMessage: 'Invalid', // TODO
+  inspectFormat: (val: number) => getDisplayDate(val) || '-',
+  // component: defineAsyncComponent(() => import('@/components/inputs/TimestampInput.vue')),
+}
+
+const exerciseResultIdsField: Readonly<FieldProps> = {
+  field: Field.EXERCISE_RESULT_IDS,
+  label: 'Exercise Results',
+  desc: 'The exercise results to be recorded for the workout in the order selected.',
+  getDefault: () => [],
+  validator: idArrayValidator,
+  validationMessage: 'Invalid', // TODO
+  inspectFormat: (val: string[]) => val?.join(', ') || '-',
+  // component: defineAsyncComponent(() => import('@/components/inputs/ExerciseResultIdsInput.vue')),
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+//     EXERCISE RESULT                                                       //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+const repsField: Readonly<FieldProps> = {
+  field: Field.REPS,
+  label: 'Reps',
+  getDefault: () => 0,
+  validator: setNumberArrayValidator,
+  validationMessage: 'Invalid', // TODO
+  inspectFormat: (val: number[]) => val?.join(', ') || '-',
+  // component: defineAsyncComponent(() => import('@/components/inputs/RepsInput.vue')),
+}
+
+const weightLbsField: Readonly<FieldProps> = {
+  field: Field.WEIGHT_LBS,
+  label: 'Weight (lbs)',
+  getDefault: () => 0,
+  validator: setNumberArrayValidator,
+  validationMessage: 'Invalid', // TODO
+  inspectFormat: (val: number[]) => val?.join(', ') || '-',
+  // component: defineAsyncComponent(() => import('@/components/inputs/WeightLbsInput.vue')),
+}
+
+const distanceMilesField: Readonly<FieldProps> = {
+  field: Field.DISTANCE_MILES,
+  label: 'Distance (miles)',
+  getDefault: () => 0,
+  validator: setNumberArrayValidator,
+  validationMessage: 'Invalid', // TODO
+  inspectFormat: (val: number[]) => val?.join(', ') || '-',
+  // component: defineAsyncComponent(() => import('@/components/inputs/DistanceMilesInput.vue')),
+}
+
+const durationMinutesField: Readonly<FieldProps> = {
+  field: Field.DURATION_MINUTES,
+  label: 'Duration (minutes)',
+  getDefault: () => 0,
+  validator: setNumberArrayValidator,
+  validationMessage: 'Invalid', // TODO
+  inspectFormat: (val: number[]) => val?.join(', ') || '-',
+  // component: defineAsyncComponent(() => import('@/components/inputs/DurationMinutesInput.vue')),
+}
+
+const wattsField: Readonly<FieldProps> = {
+  field: Field.WATTS,
+  label: 'Watts',
+  getDefault: () => 0,
+  validator: setNumberArrayValidator,
+  validationMessage: 'Invalid', // TODO
+  inspectFormat: (val: number[]) => val?.join(', ') || '-',
+  // component: defineAsyncComponent(() => import('@/components/inputs/WattsInput.vue')),
+}
+
+const speedMphField: Readonly<FieldProps> = {
+  field: Field.SPEED_MPH,
+  label: 'Speed (mph)',
+  getDefault: () => 0,
+  validator: setNumberArrayValidator,
+  validationMessage: 'Invalid', // TODO
+  inspectFormat: (val: number[]) => val?.join(', ') || '-',
+  // component: defineAsyncComponent(() => import('@/components/inputs/SpeedMphInput.vue')),
+}
+
+const caloriesField: Readonly<FieldProps> = {
+  field: Field.CALORIES,
+  label: 'Calories Burned',
+  getDefault: () => 0,
+  validator: setNumberArrayValidator,
+  validationMessage: 'Invalid', // TODO
+  inspectFormat: (val: number[]) => val?.join(', ') || '-',
+  // component: defineAsyncComponent(() => import('@/components/inputs/CaloriesInput.vue')),
+}
+
+const resistanceField: Readonly<FieldProps> = {
+  field: Field.RESISTANCE,
+  label: 'Resistance',
+  getDefault: () => 0,
+  validator: setNumberArrayValidator,
+  validationMessage: 'Invalid', // TODO
+  inspectFormat: (val: number[]) => val?.join(', ') || '-',
+  // component: defineAsyncComponent(() => import('@/components/inputs/ResistanceInput.vue')),
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+//     MEASUREMENT RESULT                                                    //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+const heightWeightLbsField: Readonly<FieldProps> = {
+  field: Field.HEIGHT_WEIGHT_LBS,
+  label: 'Body Weight (lbs)', // Stored with height in the database
+  getDefault: () => [0, 0],
+  validator: heightWeightValidator,
+  validationMessage: 'Invalid', // TODO
+  inspectFormat: (val: number[]) => `${val?.join(', ') || '-'}`,
+  // component: defineAsyncComponent(() => import('@/components/inputs/BodyWeightInput.vue')),
+}
 
 const percentField: Readonly<FieldProps> = {
   field: Field.PERCENT,
@@ -233,6 +430,26 @@ const percentField: Readonly<FieldProps> = {
   component: defineAsyncComponent(() => import('@/components/inputs/PercentInput.vue')),
 }
 
+const inchesField: Readonly<FieldProps> = {
+  field: Field.INCHES,
+  label: 'Inches',
+  getDefault: () => 0,
+  validator: zeroPlusNumberValidator,
+  validationMessage: 'Invalid', // TODO
+  inspectFormat: (val: number) => `${val || '-'}`,
+  // component: defineAsyncComponent(() => import('@/components/inputs/InchesInput.vue')),
+}
+
+const lbsField: Readonly<FieldProps> = {
+  field: Field.LBS,
+  label: 'Pounds',
+  getDefault: () => 0,
+  validator: zeroPlusNumberValidator,
+  validationMessage: 'Invalid', // TODO
+  inspectFormat: (val: number) => `${val || '-'}`,
+  // component: defineAsyncComponent(() => import('@/components/inputs/LbsInput.vue')),
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 //     APP SCHEMA FIELD CARDS                                                //
@@ -241,7 +458,7 @@ const percentField: Readonly<FieldProps> = {
 
 const coreFields: FieldProps[] = [idField, timestampField]
 const parentFields: FieldProps[] = [nameField, descField, enabledField, favoritedField]
-const childFields: FieldProps[] = [parentIdField, noteField]
+const childFields: FieldProps[] = [parentIdField, noteField, activeField]
 
 export const logFields: FieldProps[] = [
   autoIdField,
@@ -254,10 +471,37 @@ export const logFields: FieldProps[] = [
 ]
 export const settingFields: FieldProps[] = [keyField, valueField]
 
-export const workoutFields: FieldProps[] = [...coreFields, ...parentFields]
-export const exerciseFields: FieldProps[] = [...coreFields, ...parentFields]
-export const measurementFields: FieldProps[] = [...coreFields, ...parentFields]
+export const workoutFields: FieldProps[] = [...coreFields, ...parentFields, exerciseIdsField]
+export const exerciseFields: FieldProps[] = [...coreFields, ...parentFields, exerciseInputsField]
+export const measurementFields: FieldProps[] = [
+  ...coreFields,
+  ...parentFields,
+  measurementInputField,
+]
 
-export const workoutResultFields: FieldProps[] = [...coreFields, ...childFields]
-export const exerciseResultFields: FieldProps[] = [...coreFields, ...childFields]
-export const measurementResultFields: FieldProps[] = [...coreFields, ...childFields]
+export const workoutResultFields: FieldProps[] = [
+  ...coreFields,
+  ...childFields,
+  finishedTimestampField,
+  exerciseResultIdsField,
+]
+export const exerciseResultFields: FieldProps[] = [
+  ...coreFields,
+  ...childFields,
+  repsField,
+  weightLbsField,
+  distanceMilesField,
+  durationMinutesField,
+  wattsField,
+  speedMphField,
+  caloriesField,
+  resistanceField,
+]
+export const measurementResultFields: FieldProps[] = [
+  ...coreFields,
+  ...childFields,
+  heightWeightLbsField,
+  percentField,
+  inchesField,
+  lbsField,
+]
