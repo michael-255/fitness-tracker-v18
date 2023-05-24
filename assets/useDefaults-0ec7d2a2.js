@@ -1,1 +1,0 @@
-import{a as s,I as t}from"./index-a4e40b71.js";import{u as e}from"./useDialogs-47d85305.js";function f(){s();const{confirmDialog:o}=e();async function a(){o("Load Defaults","Would you like the load defaults into the database?",t.INFO,"info",async()=>{})}return{onDefaults:a}}export{f as u};
