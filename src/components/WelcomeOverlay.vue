@@ -2,14 +2,20 @@
 import { Icon } from '@/types/icons'
 import { type Ref, ref, onUnmounted } from 'vue'
 import { RouteName } from '@/router/route-names'
-import { AppName } from '@/types/general'
+import { AppDescription, AppName } from '@/types/general'
 import { Key } from '@/types/database'
 import useLogger from '@/composables/useLogger'
 import useDefaults from '@/composables/useDefaults'
 import DB from '@/services/Database'
 
 // Composables & Stores
-const { onDefaults } = useDefaults()
+const {
+  onAddBarbellStrengthWorkouts,
+  onAddStretchRoutine,
+  onAddCarpalTunnelRoutine,
+  onAddDeepBreathingRoutine,
+  onAddStandardMeasurements,
+} = useDefaults()
 const { log } = useLogger()
 
 // Data
@@ -45,9 +51,11 @@ async function onCloseWelcomeOverlay() {
         <p class="text-h6">Welcome to {{ AppName }}</p>
 
         <!-- Information -->
+        <p>{{ AppDescription }}</p>
+
         <p>
-          This app provides you with the ability to manage and track workouts, exercises, and
-          measurements.
+          Continue reading to learn more, or scroll to the bottom and click the "Start Using App"
+          button to jump right in.
         </p>
 
         <!-- Favorites -->
@@ -82,10 +90,54 @@ async function onCloseWelcomeOverlay() {
         <!-- Defaults -->
         <div class="q-mb-md">
           <p>
-            You can load default demostration data into the database to get started with the app
-            right away by clicking the button below. This action can be repeated.
+            You can load default workouts, exercises, and measurements into the database to get
+            started with the app right away below. These are also available on the Settings page.
           </p>
-          <QBtn color="primary" label="Add Defaults" :icon="Icon.ADD_NOTE" @click="onDefaults()" />
+
+          <div class="q-mb-md">
+            <QBtn
+              color="primary"
+              label="Barbell Strength Workouts"
+              :icon="Icon.ADD_NOTE"
+              @click="onAddBarbellStrengthWorkouts()"
+            />
+          </div>
+
+          <div class="q-mb-md">
+            <QBtn
+              color="primary"
+              label="Stretch Routine"
+              :icon="Icon.ADD_NOTE"
+              @click="onAddStretchRoutine()"
+            />
+          </div>
+
+          <div class="q-mb-md">
+            <QBtn
+              color="primary"
+              label="Carpal Tunnel Routine"
+              :icon="Icon.ADD_NOTE"
+              @click="onAddCarpalTunnelRoutine()"
+            />
+          </div>
+
+          <div class="q-mb-md">
+            <QBtn
+              color="primary"
+              label="Deep Breathing Routine"
+              :icon="Icon.ADD_NOTE"
+              @click="onAddDeepBreathingRoutine()"
+            />
+          </div>
+
+          <div>
+            <QBtn
+              color="primary"
+              label="Standard Measurements"
+              :icon="Icon.ADD_NOTE"
+              @click="onAddStandardMeasurements()"
+            />
+          </div>
         </div>
 
         <!-- Donation -->

@@ -20,7 +20,13 @@ useMeta({ title: `${AppName} - Settings` })
 const { log } = useLogger()
 const { notify } = useNotifications()
 const { confirmDialog } = useDialogs()
-const { onDefaults } = useDefaults()
+const {
+  onAddBarbellStrengthWorkouts,
+  onAddStretchRoutine,
+  onAddCarpalTunnelRoutine,
+  onAddDeepBreathingRoutine,
+  onAddStandardMeasurements,
+} = useDefaults()
 const { goToData } = useRoutables()
 
 // Data
@@ -369,9 +375,41 @@ async function updateHeight() {
       <QCardSection>
         <p class="text-h6">Defaults</p>
 
+        <p>
+          You can add default workouts, exercises, and measurements to the database below if you
+          don't feel like creating your own.
+        </p>
+
+        <div class="q-mb-md">
+          <QBtn
+            label="Barbell Strength Workouts"
+            color="primary"
+            @click="onAddBarbellStrengthWorkouts()"
+          />
+        </div>
+
+        <div class="q-mb-md">
+          <QBtn label="Stretch Routine" color="primary" @click="onAddStretchRoutine()" />
+        </div>
+
+        <div class="q-mb-md">
+          <QBtn label="Carpal Tunnel Routine" color="primary" @click="onAddCarpalTunnelRoutine()" />
+        </div>
+
+        <div class="q-mb-md">
+          <QBtn
+            label="Deep Breathing Routine"
+            color="primary"
+            @click="onAddDeepBreathingRoutine()"
+          />
+        </div>
+
         <div>
-          <p>Load default demostration records into the database. This action can be repeated.</p>
-          <QBtn label="Load Examples" color="primary" @click="onDefaults()" />
+          <QBtn
+            label="Standard Measurements"
+            color="primary"
+            @click="onAddStandardMeasurements()"
+          />
         </div>
       </QCardSection>
     </QCard>
