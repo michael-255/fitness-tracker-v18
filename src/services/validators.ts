@@ -67,7 +67,6 @@ const parent = object({
   [Field.DESC]: textAreaValidator,
   [Field.ENABLED]: booleanValidator,
   [Field.FAVORITED]: booleanValidator,
-  [Field.ACTIVE]: booleanValidator,
 }).noUnknown()
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -79,6 +78,7 @@ const parent = object({
 const child = object({
   [Field.PARENT_ID]: idValidator,
   [Field.NOTE]: textAreaValidator,
+  [Field.ACTIVE]: booleanValidator,
 }).noUnknown()
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -88,6 +88,7 @@ const child = object({
 ///////////////////////////////////////////////////////////////////////////////
 
 export const idArrayValidator = array().of(idValidator).required()
+export const requiredIdArrayValidator = array().of(idValidator).required().min(1)
 export const percentValidator = number().required().min(0).max(100)
 export const zeroPlusNumberValidator = number().required().min(0).max(Number.MAX_SAFE_INTEGER)
 export const setNumberArrayValidator = array().of(zeroPlusNumberValidator).required()
@@ -95,14 +96,13 @@ export const heightWeightValidator = array()
   .of(number().required().min(0).max(1000))
   .length(2)
   .required()
-// TODO - Need to allow 0 elements
 export const exerciseInputsValidator = array()
   .of(string().required().oneOf(Object.values(ExerciseInput)))
   .required()
 export const measurementInputValidator = string().required().oneOf(Object.values(MeasurementInput))
 
 const workout = object({
-  [Field.EXERCISE_IDS]: idArrayValidator,
+  [Field.EXERCISE_IDS]: requiredIdArrayValidator,
 }).noUnknown()
 const exercise = object({
   [Field.EXERCISE_INPUTS]: exerciseInputsValidator,

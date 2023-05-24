@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import type { Field } from '@/types/database'
-import { Limit } from '@/types/general'
 import type { MixedSchema } from 'yup'
 import useActionStore from '@/stores/action'
 
@@ -37,9 +36,7 @@ function validationRule() {
       <QInput
         v-model="actionStore.record[field]"
         :rules="[validationRule()]"
-        :maxlength="Limit.MAX_NAME_LENGTH"
         type="number"
-        step="0.01"
         lazy-rules
         dense
         outlined

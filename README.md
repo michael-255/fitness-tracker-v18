@@ -8,8 +8,8 @@ device.
 
 First pass at validators and other services is done. Need to work on input components.
 
-- [ ] Build input components for fields
-- [ ] Try to combine some together if possible
+- Build input components for fields
+- Try to combine some together if possible
 
 ## Table of Contents
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { date } from 'quasar'
 import { onMounted, type Ref, ref } from 'vue'
-import type { Field } from '@/types/database'
+import { Field } from '@/types/database'
 import { Icon } from '@/types/icons'
 import useActionStore from '@/stores/action'
 
@@ -16,7 +16,7 @@ const props = defineProps<{
 const actionStore = useActionStore()
 
 // Data
-const displayDate: Ref<string> = ref('')
+const displayDate: Ref<string | undefined> = ref('')
 const datePicker: Ref<string> = ref('')
 const timePicker: Ref<string> = ref('')
 
@@ -44,6 +44,14 @@ function onPickerUpdate() {
     const dateTimestamp = new Date(`${datePicker.value} ${timePicker.value}`).getTime()
     updateDisplayDate(dateTimestamp)
   }
+}
+
+/**
+ * Clears the displayed date and action record date for the finished timestamp.
+ */
+function clearDates(): void {
+  actionStore.record[props.field] = undefined
+  displayDate.value = undefined
 }
 </script>
 
@@ -80,10 +88,19 @@ function onPickerUpdate() {
 
           <!-- Set DateTime to now -->
           <QBtn
+            v-if="field === Field.TIMESTAMP"
             :icon="Icon.CALENDAR_CHECK"
             color="positive"
             class="q-ml-sm q-px-sm"
             @click="updateDisplayDate()"
+          />
+          <!-- Clear DateTime (Field.FINISHED_TIMESTAMP) -->
+          <QBtn
+            v-else
+            :icon="Icon.CALENDAR_CLEAR"
+            color="negative"
+            class="q-ml-sm q-px-sm"
+            @click="clearDates()"
           />
         </template>
       </QInput>

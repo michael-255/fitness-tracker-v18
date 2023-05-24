@@ -140,7 +140,12 @@ class Database extends Dexie {
       throw new Error('Add record validator not found')
     }
     if (!(await recordValidator.isValid(record))) {
-      throw new Error(`Add record attempted to add invalid record: ${JSON.stringify(record)}`)
+      const recordMessage = record
+        ? Object.entries(record)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join(', ')
+        : '-'
+      throw new Error(`Add record attempted to add invalid record: ${recordMessage}`)
     }
 
     // Validate cleans record of unknown properties

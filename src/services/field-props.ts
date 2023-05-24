@@ -17,7 +17,7 @@ import {
   measurementInputValidator,
   zeroPlusNumberValidator,
   heightWeightValidator,
-  setNumberArrayValidator,
+  requiredIdArrayValidator,
 } from '@/services/validators'
 import {
   Field,
@@ -150,9 +150,9 @@ const timestampField: Readonly<FieldProps> = {
   label: 'Created Date',
   getDefault: () => Date.now(),
   validator: timestampValidator,
-  validationMessage: 'Must be a valid number',
+  validationMessage: 'Invalid',
   inspectFormat: (val: number) => getDisplayDate(val) || '-',
-  component: defineAsyncComponent(() => import('@/components/inputs/TimestampInput.vue')),
+  component: defineAsyncComponent(() => import('@/components/inputs/InputTimestamp.vue')),
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -168,7 +168,7 @@ const nameField: Readonly<FieldProps> = {
   validator: nameValidator,
   validationMessage: `Name must be between ${Limit.MIN_NAME_LENGTH} and ${Limit.MAX_NAME_LENGTH} characters`,
   inspectFormat: (val: string) => `${val || '-'}`,
-  component: defineAsyncComponent(() => import('@/components/inputs/NameInput.vue')),
+  component: defineAsyncComponent(() => import('@/components/inputs/InputName.vue')),
 }
 
 const descField: Readonly<FieldProps> = {
@@ -178,7 +178,7 @@ const descField: Readonly<FieldProps> = {
   validator: textAreaValidator,
   validationMessage: `Description cannot exceed ${Limit.MAX_TEXT_AREA_LENGTH} characters`,
   inspectFormat: (val: string) => `${val || '-'}`,
-  component: defineAsyncComponent(() => import('@/components/inputs/TextAreaInput.vue')),
+  component: defineAsyncComponent(() => import('@/components/inputs/InputTextArea.vue')),
 }
 
 const enabledField: Readonly<FieldProps> = {
@@ -189,7 +189,7 @@ const enabledField: Readonly<FieldProps> = {
   validator: booleanValidator,
   validationMessage: '* Required',
   inspectFormat: (val: boolean) => (val ? 'Yes' : 'No'),
-  component: defineAsyncComponent(() => import('@/components/inputs/ToggleInput.vue')),
+  component: defineAsyncComponent(() => import('@/components/inputs/InputToggle.vue')),
 }
 
 const favoritedField: Readonly<FieldProps> = {
@@ -200,7 +200,7 @@ const favoritedField: Readonly<FieldProps> = {
   validator: booleanValidator,
   validationMessage: '* Required',
   inspectFormat: (val: boolean) => (val ? 'Yes' : 'No'),
-  component: defineAsyncComponent(() => import('@/components/inputs/ToggleInput.vue')),
+  component: defineAsyncComponent(() => import('@/components/inputs/InputToggle.vue')),
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -227,7 +227,7 @@ const noteField: Readonly<FieldProps> = {
   validator: textAreaValidator,
   validationMessage: `Note cannot exceed ${Limit.MAX_TEXT_AREA_LENGTH} characters`,
   inspectFormat: (val: string) => `${val || '-'}`,
-  component: defineAsyncComponent(() => import('@/components/inputs/TextAreaInput.vue')),
+  component: defineAsyncComponent(() => import('@/components/inputs/InputTextArea.vue')),
 }
 
 const activeField: Readonly<FieldProps> = {
@@ -251,10 +251,10 @@ const exerciseIdsField: Readonly<FieldProps> = {
   label: 'Exercises',
   desc: 'Exercises to be performed in the workout in the order selected.',
   getDefault: () => [],
-  validator: idArrayValidator,
-  validationMessage: 'Invalid', // TODO
+  validator: requiredIdArrayValidator,
+  validationMessage: 'Must have at least one exercise selected',
   inspectFormat: (val: string[]) => val?.join(', ') || '-',
-  // component: defineAsyncComponent(() => import('@/components/inputs/ExerciseIdsInput.vue')),
+  component: defineAsyncComponent(() => import('@/components/inputs/InputExerciseIds.vue')),
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -266,12 +266,12 @@ const exerciseIdsField: Readonly<FieldProps> = {
 const exerciseInputsField: Readonly<FieldProps> = {
   field: Field.EXERCISE_INPUTS,
   label: 'Exercise Inputs',
-  desc: 'Exercise input types to be recorded for the record. Leave blank if you want the record to be purely instructional during a workout.',
+  desc: 'Select the exercise inputs that you can record data to for this record. Leave blank if you want the record to be purely instructional during a workout.',
   getDefault: () => [],
   validator: exerciseInputsValidator,
-  validationMessage: 'Invalid', // TODO
+  validationMessage: 'Invalid',
   inspectFormat: (val: ExerciseInput[]) => val?.join(', ') || '-',
-  // component: defineAsyncComponent(() => import('@/components/inputs/ExerciseInputsInput.vue')),
+  component: defineAsyncComponent(() => import('@/components/inputs/InputexerciseInputs.vue')),
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -283,12 +283,12 @@ const exerciseInputsField: Readonly<FieldProps> = {
 const measurementInputField: Readonly<FieldProps> = {
   field: Field.MEASUREMENT_INPUT,
   label: 'Measurement Inputs',
-  desc: 'Measurement input type to be recorded for this record.',
-  getDefault: () => [],
+  desc: 'Select the measurement input that you can record data to for this record. You must select one',
+  getDefault: () => undefined,
   validator: measurementInputValidator,
-  validationMessage: 'Invalid', // TODO
+  validationMessage: 'Must select a measurement input',
   inspectFormat: (val: MeasurementInput) => `${val || '-'}`,
-  // Not rendered
+  component: defineAsyncComponent(() => import('@/components/inputs/InputMeasurementInput.vue')),
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -302,20 +302,20 @@ const finishedTimestampField: Readonly<FieldProps> = {
   label: 'Finished Date',
   getDefault: () => undefined,
   validator: timestampValidator,
-  validationMessage: 'Invalid', // TODO
+  validationMessage: 'Invalid',
   inspectFormat: (val: number) => getDisplayDate(val) || '-',
-  // component: defineAsyncComponent(() => import('@/components/inputs/TimestampInput.vue')),
+  component: defineAsyncComponent(() => import('@/components/inputs/InputTimestamp.vue')),
 }
 
 const exerciseResultIdsField: Readonly<FieldProps> = {
   field: Field.EXERCISE_RESULT_IDS,
   label: 'Exercise Results',
-  desc: 'The exercise results to be recorded for the workout in the order selected.',
+  desc: 'The exercise results to be recorded for the workout in the order selected. Can be left blank for instructional workouts.',
   getDefault: () => [],
   validator: idArrayValidator,
-  validationMessage: 'Invalid', // TODO
+  validationMessage: 'Invalid',
   inspectFormat: (val: string[]) => val?.join(', ') || '-',
-  // component: defineAsyncComponent(() => import('@/components/inputs/ExerciseResultIdsInput.vue')),
+  component: defineAsyncComponent(() => import('@/components/inputs/InputExerciseResultIds.vue')),
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -328,80 +328,80 @@ const repsField: Readonly<FieldProps> = {
   field: Field.REPS,
   label: 'Reps',
   getDefault: () => 0,
-  validator: setNumberArrayValidator,
-  validationMessage: 'Invalid', // TODO
+  validator: zeroPlusNumberValidator,
+  validationMessage: 'Must be 0 or greater',
   inspectFormat: (val: number[]) => val?.join(', ') || '-',
-  // component: defineAsyncComponent(() => import('@/components/inputs/RepsInput.vue')),
+  // component: defineAsyncComponent(() => import('@/components/inputs/InputReps.vue')),
 }
 
 const weightLbsField: Readonly<FieldProps> = {
   field: Field.WEIGHT_LBS,
   label: 'Weight (lbs)',
   getDefault: () => 0,
-  validator: setNumberArrayValidator,
-  validationMessage: 'Invalid', // TODO
+  validator: zeroPlusNumberValidator,
+  validationMessage: 'Must be 0 or greater',
   inspectFormat: (val: number[]) => val?.join(', ') || '-',
-  // component: defineAsyncComponent(() => import('@/components/inputs/WeightLbsInput.vue')),
+  // component: defineAsyncComponent(() => import('@/components/inputs/InputWeightLbs.vue')),
 }
 
 const distanceMilesField: Readonly<FieldProps> = {
   field: Field.DISTANCE_MILES,
   label: 'Distance (miles)',
   getDefault: () => 0,
-  validator: setNumberArrayValidator,
-  validationMessage: 'Invalid', // TODO
+  validator: zeroPlusNumberValidator,
+  validationMessage: 'Must be 0 or greater',
   inspectFormat: (val: number[]) => val?.join(', ') || '-',
-  // component: defineAsyncComponent(() => import('@/components/inputs/DistanceMilesInput.vue')),
+  // component: defineAsyncComponent(() => import('@/components/inputs/InputDistanceMiles.vue')),
 }
 
 const durationMinutesField: Readonly<FieldProps> = {
   field: Field.DURATION_MINUTES,
   label: 'Duration (minutes)',
   getDefault: () => 0,
-  validator: setNumberArrayValidator,
-  validationMessage: 'Invalid', // TODO
+  validator: zeroPlusNumberValidator,
+  validationMessage: 'Must be 0 or greater',
   inspectFormat: (val: number[]) => val?.join(', ') || '-',
-  // component: defineAsyncComponent(() => import('@/components/inputs/DurationMinutesInput.vue')),
+  // component: defineAsyncComponent(() => import('@/components/inputs/InputDurationMinutes.vue')),
 }
 
 const wattsField: Readonly<FieldProps> = {
   field: Field.WATTS,
   label: 'Watts',
   getDefault: () => 0,
-  validator: setNumberArrayValidator,
-  validationMessage: 'Invalid', // TODO
+  validator: zeroPlusNumberValidator,
+  validationMessage: 'Must be 0 or greater',
   inspectFormat: (val: number[]) => val?.join(', ') || '-',
-  // component: defineAsyncComponent(() => import('@/components/inputs/WattsInput.vue')),
+  // component: defineAsyncComponent(() => import('@/components/inputs/InputWatts.vue')),
 }
 
 const speedMphField: Readonly<FieldProps> = {
   field: Field.SPEED_MPH,
   label: 'Speed (mph)',
   getDefault: () => 0,
-  validator: setNumberArrayValidator,
-  validationMessage: 'Invalid', // TODO
+  validator: zeroPlusNumberValidator,
+  validationMessage: 'Must be 0 or greater',
   inspectFormat: (val: number[]) => val?.join(', ') || '-',
-  // component: defineAsyncComponent(() => import('@/components/inputs/SpeedMphInput.vue')),
+  // component: defineAsyncComponent(() => import('@/components/inputs/InputSpeedMph.vue')),
 }
 
 const caloriesField: Readonly<FieldProps> = {
   field: Field.CALORIES,
   label: 'Calories Burned',
   getDefault: () => 0,
-  validator: setNumberArrayValidator,
-  validationMessage: 'Invalid', // TODO
+  validator: zeroPlusNumberValidator,
+  validationMessage: 'Must be 0 or greater',
   inspectFormat: (val: number[]) => val?.join(', ') || '-',
-  // component: defineAsyncComponent(() => import('@/components/inputs/CaloriesInput.vue')),
+  // component: defineAsyncComponent(() => import('@/components/inputs/InputCalories.vue')),
 }
 
 const resistanceField: Readonly<FieldProps> = {
   field: Field.RESISTANCE,
   label: 'Resistance',
   getDefault: () => 0,
-  validator: setNumberArrayValidator,
-  validationMessage: 'Invalid', // TODO
+  validator: zeroPlusNumberValidator,
+  validationMessage: 'Must be 0 or greater',
   inspectFormat: (val: number[]) => val?.join(', ') || '-',
-  // component: defineAsyncComponent(() => import('@/components/inputs/ResistanceInput.vue')),
+  // component: defineAsyncComponent(() => import('@/components/inputs/InputResistance.vue')),
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -417,7 +417,7 @@ const heightWeightLbsField: Readonly<FieldProps> = {
   validator: heightWeightValidator,
   validationMessage: 'Invalid', // TODO
   inspectFormat: (val: number[]) => `${val?.join(', ') || '-'}`,
-  // component: defineAsyncComponent(() => import('@/components/inputs/BodyWeightInput.vue')),
+  // component: defineAsyncComponent(() => import('@/components/inputs/BodyWeight.vue')),
 }
 
 const percentField: Readonly<FieldProps> = {
@@ -427,7 +427,7 @@ const percentField: Readonly<FieldProps> = {
   validator: percentValidator,
   validationMessage: 'Percent must be between 0 and 100',
   inspectFormat: (val: number) => `${val}%`,
-  component: defineAsyncComponent(() => import('@/components/inputs/PercentInput.vue')),
+  component: defineAsyncComponent(() => import('@/components/inputs/InputPercent.vue')),
 }
 
 const inchesField: Readonly<FieldProps> = {
@@ -437,7 +437,7 @@ const inchesField: Readonly<FieldProps> = {
   validator: zeroPlusNumberValidator,
   validationMessage: 'Invalid', // TODO
   inspectFormat: (val: number) => `${val || '-'}`,
-  // component: defineAsyncComponent(() => import('@/components/inputs/InchesInput.vue')),
+  // component: defineAsyncComponent(() => import('@/components/inputs/Inches.vue')),
 }
 
 const lbsField: Readonly<FieldProps> = {
@@ -447,7 +447,7 @@ const lbsField: Readonly<FieldProps> = {
   validator: zeroPlusNumberValidator,
   validationMessage: 'Invalid', // TODO
   inspectFormat: (val: number) => `${val || '-'}`,
-  // component: defineAsyncComponent(() => import('@/components/inputs/LbsInput.vue')),
+  // component: defineAsyncComponent(() => import('@/components/inputs/Lbs.vue')),
 }
 
 ///////////////////////////////////////////////////////////////////////////////
