@@ -271,7 +271,7 @@ const exerciseInputsField: Readonly<FieldProps> = {
   validator: exerciseInputsValidator,
   validationMessage: 'Invalid',
   inspectFormat: (val: ExerciseInput[]) => val?.join(', ') || '-',
-  component: defineAsyncComponent(() => import('@/components/inputs/InputexerciseInputs.vue')),
+  component: defineAsyncComponent(() => import('@/components/inputs/InputExerciseInputs.vue')),
 }
 
 ///////////////////////////////////////////////////////////////////////////////
