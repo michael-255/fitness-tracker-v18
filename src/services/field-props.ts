@@ -425,9 +425,9 @@ const percentField: Readonly<FieldProps> = {
   label: 'Percentage',
   getDefault: () => 0,
   validator: percentValidator,
-  validationMessage: 'Percent must be between 0 and 100',
+  validationMessage: 'Must be between 0 and 100',
   inspectFormat: (val: number) => `${val}%`,
-  component: defineAsyncComponent(() => import('@/components/inputs/InputPercent.vue')),
+  component: defineAsyncComponent(() => import('@/components/inputs/InputNumber.vue')),
 }
 
 const inchesField: Readonly<FieldProps> = {
@@ -435,9 +435,9 @@ const inchesField: Readonly<FieldProps> = {
   label: 'Inches',
   getDefault: () => 0,
   validator: zeroPlusNumberValidator,
-  validationMessage: 'Invalid', // TODO
+  validationMessage: 'Must be 0 or greater',
   inspectFormat: (val: number) => `${val || '-'}`,
-  // component: defineAsyncComponent(() => import('@/components/inputs/Inches.vue')),
+  component: defineAsyncComponent(() => import('@/components/inputs/InputNumber.vue')),
 }
 
 const lbsField: Readonly<FieldProps> = {
@@ -445,9 +445,9 @@ const lbsField: Readonly<FieldProps> = {
   label: 'Pounds',
   getDefault: () => 0,
   validator: zeroPlusNumberValidator,
-  validationMessage: 'Invalid', // TODO
+  validationMessage: 'Must be 0 or greater',
   inspectFormat: (val: number) => `${val || '-'}`,
-  // component: defineAsyncComponent(() => import('@/components/inputs/Lbs.vue')),
+  component: defineAsyncComponent(() => import('@/components/inputs/InputNumber.vue')),
 }
 
 ///////////////////////////////////////////////////////////////////////////////

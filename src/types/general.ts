@@ -1,4 +1,16 @@
-import { Type, type Field, type Record } from '@/types/database'
+import {
+  Type,
+  type Field,
+  type Record,
+  type Workout,
+  type Exercise,
+  type Measurement,
+  type WorkoutResult,
+  type ExerciseResult,
+  type MeasurementResult,
+  ExerciseInput,
+  MeasurementInput,
+} from '@/types/database'
 import type { Log, Setting } from '@/types/database'
 
 /**
@@ -74,12 +86,12 @@ export type BackupData = {
   backupTimestamp: number
   [Type.LOG]: Log[]
   [Type.SETTING]: Setting[]
-  [Type.WORKOUT]: Record[] // TODO
-  [Type.EXERCISE]: Record[] // TODO
-  [Type.MEASUREMENT]: Record[] // TODO
-  [Type.WORKOUT_RESULT]: Record[] // TODO
-  [Type.EXERCISE_RESULT]: Record[] // TODO
-  [Type.MEASUREMENT_RESULT]: Record[] // TODO
+  [Type.WORKOUT]: Workout[]
+  [Type.EXERCISE]: Exercise[]
+  [Type.MEASUREMENT]: Measurement[]
+  [Type.WORKOUT_RESULT]: WorkoutResult[]
+  [Type.EXERCISE_RESULT]: ExerciseResult[]
+  [Type.MEASUREMENT_RESULT]: MeasurementResult[]
 }
 
 /**

@@ -10,6 +10,11 @@ First pass at validators and other services is done. Need to work on input compo
 
 - Build input components... combine components if possible
 
+Possible other features:
+
+- Encrypt export data option
+- Compress export data
+
 ## Table of Contents
 
 - [Usage](#usage)
