@@ -6,9 +6,11 @@ device.
 
 ## TODOs
 
-First pass at validators and other services is done. Need to work on input components.
-
 - Build input components... combine components if possible
+- ParentId watcher for child records to get the parent
+
+  - Watcher updates `measurementInput`
+  - Watcher updates `exerciseInputs`
 
 Possible other features:
 
