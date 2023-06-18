@@ -6,6 +6,8 @@ device.
 
 ## TODOs
 
+Left off in `~/src/components/inputs/*`
+
 - Build input components... combine components if possible
 - ParentId watcher for child records to get the parent
 
