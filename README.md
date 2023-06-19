@@ -6,18 +6,14 @@ device.
 
 ## TODOs
 
-Left off in `~/src/components/inputs/*`
+NEW TASKS:
 
-- Build input components... combine components if possible
-- ParentId watcher for child records to get the parent
+- [ ] Move over changes from refactored `Web App Template` project!
 
-  - Watcher updates `measurementInput`
-  - Watcher updates `exerciseInputs`
+STRETCH FEATURES:
 
-Possible other features:
-
+- Reserved ids for default records
 - Encrypt export data option
-- Compress export data
 
 ## Table of Contents
 
