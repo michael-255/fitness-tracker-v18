@@ -7,22 +7,11 @@ import { mixed, object, array, string, number, boolean } from 'yup'
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-export const autoIdValidator = number().integer()
-export const timestampValidator = number().required().integer()
+export const autoIdValidator = number().integer().positive()
 export const severityValidator = string().required().oneOf(Object.values(Severity))
 export const labelValidator = string().required().trim()
 export const anyValidator = mixed()
 export const textValidator = string().trim()
-
-const log = object({
-  [Field.AUTO_ID]: autoIdValidator,
-  [Field.TIMESTAMP]: timestampValidator,
-  [Field.SEVERITY]: severityValidator,
-  [Field.LABEL]: labelValidator,
-  [Field.DETAILS]: anyValidator,
-  [Field.MESSAGE]: textValidator,
-  [Field.STACK]: textValidator,
-}).noUnknown()
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
@@ -32,11 +21,7 @@ const log = object({
 
 export const keyValidator = string().required().trim()
 export const valueValidator = mixed().required()
-
-const setting = object({
-  [Field.KEY]: keyValidator,
-  [Field.VALUE]: valueValidator,
-}).noUnknown()
+export const heightValidator = number().min(1).max(110).nullable()
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
@@ -45,12 +30,8 @@ const setting = object({
 ///////////////////////////////////////////////////////////////////////////////
 
 export const idValidator = string().required().uuid()
+export const timestampValidator = number().required().integer()
 export const typeValidator = string().required().oneOf(Object.values(Type))
-
-const core = object({
-  [Field.ID]: idValidator,
-  [Field.TIMESTAMP]: timestampValidator,
-}).noUnknown()
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
@@ -62,24 +43,13 @@ export const nameValidator = string().required().min(1).max(50).trim()
 export const textAreaValidator = string().defined().max(500).trim()
 export const booleanValidator = boolean().defined()
 
-const parent = object({
-  [Field.NAME]: nameValidator,
-  [Field.DESC]: textAreaValidator,
-  [Field.ENABLED]: booleanValidator,
-  [Field.FAVORITED]: booleanValidator,
-}).noUnknown()
-
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 //     CHILD                                                                 //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-const child = object({
-  [Field.PARENT_ID]: idValidator,
-  [Field.NOTE]: textAreaValidator,
-  [Field.ACTIVE]: booleanValidator,
-}).noUnknown()
+// None yet...
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
@@ -101,12 +71,45 @@ export const exerciseInputsValidator = array()
   .required()
 export const measurementInputValidator = string().required().oneOf(Object.values(MeasurementInput))
 
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+//     MODEL VALIDATORS                                                      //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+const core = object({
+  [Field.ID]: idValidator,
+  [Field.TIMESTAMP]: timestampValidator,
+  [Field.TYPE]: typeValidator,
+}).noUnknown()
+
+const parent = object({
+  [Field.NAME]: nameValidator,
+  [Field.DESC]: textAreaValidator,
+  [Field.ENABLED]: booleanValidator,
+  [Field.FAVORITED]: booleanValidator,
+  [Field.LAST_CHILD]: object({
+    [Field.ID]: idValidator.optional(),
+    [Field.TYPE]: typeValidator.optional(),
+    [Field.TIMESTAMP]: timestampValidator.optional(),
+    [Field.PARENT_ID]: idValidator.optional(),
+    [Field.NOTE]: textAreaValidator.optional(),
+  }).optional(),
+}).noUnknown()
+
+const child = object({
+  [Field.PARENT_ID]: idValidator,
+  [Field.NOTE]: textAreaValidator,
+}).noUnknown()
+
 const workout = object({
   [Field.EXERCISE_IDS]: requiredIdArrayValidator,
 }).noUnknown()
+
 const exercise = object({
   [Field.EXERCISE_INPUTS]: exerciseInputsValidator,
 }).noUnknown()
+
 const measurement = object({
   [Field.MEASUREMENT_INPUT]: measurementInputValidator,
 }).noUnknown()
@@ -115,6 +118,7 @@ const workoutResult = object({
   [Field.FINISHED_TIMESTAMP]: timestampValidator,
   [Field.EXERCISE_RESULT_IDS]: idArrayValidator,
 }).noUnknown()
+
 const exerciseResult = object({
   [Field.REPS]: setNumberArrayValidator,
   [Field.WEIGHT_LBS]: setNumberArrayValidator,
@@ -125,42 +129,44 @@ const exerciseResult = object({
   [Field.CALORIES]: setNumberArrayValidator,
   [Field.RESISTANCE]: setNumberArrayValidator,
 }).noUnknown()
+
 const measurementResult = object({
-  [Field.HEIGHT_WEIGHT_LBS]: heightWeightValidator,
+  [Field.HEIGHT_WEIGHT]: heightWeightValidator,
   [Field.PERCENT]: percentValidator,
   [Field.INCHES]: zeroPlusNumberValidator,
   [Field.LBS]: zeroPlusNumberValidator,
 }).noUnknown()
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-//     MODEL VALIDATORS                                                      //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
+export const logValidator = object({
+  [Field.AUTO_ID]: autoIdValidator,
+  [Field.TIMESTAMP]: timestampValidator,
+  [Field.SEVERITY]: severityValidator,
+  [Field.LABEL]: labelValidator,
+  [Field.DETAILS]: anyValidator,
+  [Field.MESSAGE]: textValidator,
+  [Field.STACK]: textValidator,
+}).noUnknown()
 
-export const logValidator = mixed().concat(log)
-export const settingValidator = mixed().concat(setting)
+export const settingValidator = object({
+  [Field.KEY]: keyValidator,
+  [Field.VALUE]: valueValidator,
+}).noUnknown()
 
-export const workoutValidator = mixed().concat(core).concat(parent).concat(workout)
-export const exerciseValidator = mixed().concat(core).concat(parent).concat(exercise)
-export const measurementValidator = mixed().concat(core).concat(parent).concat(measurement)
-
-export const workoutResultValidator = mixed().concat(core).concat(child).concat(workoutResult)
-export const exerciseResultValidator = mixed().concat(core).concat(child).concat(exerciseResult)
-export const measurementResultValidator = mixed()
-  .concat(core)
-  .concat(child)
-  .concat(measurementResult)
-
-export const recordValidator = mixed()
-  .concat(log)
-  .concat(setting)
-  .concat(core)
+export const anyParentValidator = core
   .concat(parent)
-  .concat(child)
   .concat(workout)
   .concat(exercise)
   .concat(measurement)
+export const anyChildValidator = core
+  .concat(child)
   .concat(workoutResult)
   .concat(exerciseResult)
   .concat(measurementResult)
+
+export const workoutValidator = core.concat(core).concat(parent).concat(workout)
+export const exerciseValidator = core.concat(core).concat(parent).concat(exercise)
+export const measurementValidator = core.concat(core).concat(parent).concat(measurement)
+
+export const workoutResultValidator = core.concat(core).concat(child).concat(workoutResult)
+export const exerciseResultValidator = core.concat(core).concat(child).concat(exerciseResult)
+export const measurementResultValidator = core.concat(core).concat(child).concat(measurementResult)

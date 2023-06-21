@@ -5,17 +5,14 @@ import { Field } from '@/types/database'
 import { Icon } from '@/types/icons'
 import useActionStore from '@/stores/action'
 
-// Props & Emits
 const props = defineProps<{
   field: Field
   label: string
   getDefault: () => any
 }>()
 
-// Composables & Stores
 const actionStore = useActionStore()
 
-// Data
 const displayDate: Ref<string | undefined> = ref('')
 const datePicker: Ref<string> = ref('')
 const timePicker: Ref<string> = ref('')
@@ -27,28 +24,22 @@ onMounted(() => {
   updateDisplayDate(existingTime)
 })
 
-/**
- * Updates the displayed date model value and the action record store.
- * @param timestamp
- */
 function updateDisplayDate(timestamp: number = props.getDefault()) {
   actionStore.record[props.field] = timestamp
   displayDate.value = date.formatDate(timestamp, 'ddd, YYYY MMM Do, h:mm A')
 }
 
-/**
- * If a picker time exists, sets display date and model ref to the picker time.
- */
 function onPickerUpdate() {
-  if (datePicker.value && timePicker.value) {
-    const dateTimestamp = new Date(`${datePicker.value} ${timePicker.value}`).getTime()
-    updateDisplayDate(dateTimestamp)
-  }
+  // Set empty pickers with current time
+  datePicker.value = datePicker.value
+    ? datePicker.value
+    : date.formatDate(Date.now(), 'ddd MMM DD YYYY')
+  timePicker.value = timePicker.value ? timePicker.value : date.formatDate(Date.now(), 'HH:mm:00')
+
+  const dateTimestamp = new Date(`${datePicker.value} ${timePicker.value}`).getTime()
+  updateDisplayDate(dateTimestamp)
 }
 
-/**
- * Clears the displayed date and action record date for the finished timestamp.
- */
 function clearDates(): void {
   actionStore.record[props.field] = undefined
   displayDate.value = undefined

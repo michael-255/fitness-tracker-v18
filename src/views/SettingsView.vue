@@ -2,8 +2,9 @@
 import { exportFile } from 'quasar'
 import { Icon } from '@/types/icons'
 import { type BackupData, AppName, Limit, LogRetention } from '@/types/general'
-import { type Setting, Type, Key } from '@/types/database'
+import { type Setting, Type, SettingKey } from '@/types/database'
 import { type Ref, ref, onUnmounted } from 'vue'
+import { heightValidator } from '@/services/validators'
 import { useMeta } from 'quasar'
 import DataSchema from '@/services/DataSchema'
 import useLogger from '@/composables/useLogger'
@@ -16,7 +17,6 @@ import DB from '@/services/Database'
 
 useMeta({ title: `${AppName} - Settings` })
 
-// Composables & Stores
 const { log } = useLogger()
 const { notify } = useNotifications()
 const { confirmDialog } = useDialogs()
@@ -27,31 +27,29 @@ const {
   onAddDeepBreathingRoutine,
   onAddStandardMeasurements,
 } = useDefaults()
-const { goToData } = useRoutables()
+const { goToLogsData, goToSettingsData, goToParentData, goToChildData } = useRoutables()
 
-// Data
-const typeOptions = DataSchema.getTypeOptions()
+const tableOptions = DataSchema.getAllTypeOptions()
 const settings: Ref<Setting[]> = ref([])
-const logRetentionIndex: Ref<number> = ref(0)
 const heightInputRef: Ref<any> = ref(null)
-const heightInches: Ref<number> = ref(1)
+const heightInches: Ref<number | null> = ref(null)
+const logRetentionIndex: Ref<number> = ref(0)
 const importFile: Ref<any> = ref(null)
-const exportModel: Ref<Type[]> = ref([])
-const exportOptions = [...typeOptions]
-const accessOptions = ref([...typeOptions])
+const accessOptions = ref([...tableOptions])
 const accessModel = ref(accessOptions.value[0])
-const deleteOptions = ref([...typeOptions])
+const deleteOptions = ref([...tableOptions])
 const deleteModel = ref(deleteOptions.value[0])
 
-// Subscriptions
 const subscription = DB.liveSettings().subscribe({
   next: (liveSettings) => {
     settings.value = liveSettings
-
-    const logRetentionTime = liveSettings.find((s) => s.key === Key.LOG_RETENTION_TIME)?.value
+    const logRetentionTime = liveSettings.find(
+      (s) => s.key === SettingKey.LOG_RETENTION_TIME
+    )?.value
     logRetentionIndex.value = Object.values(LogRetention).findIndex((i) => i === logRetentionTime)
 
-    heightInches.value = settings.value.find((s) => s.key === Key.USER_HEIGHT)?.value as number
+    heightInches.value = settings.value.find((s) => s.key === SettingKey.USER_HEIGHT)
+      ?.value as number
   },
   error: (error) => {
     log.error('Error fetching live Settings', error)
@@ -62,9 +60,6 @@ onUnmounted(() => {
   subscription.unsubscribe()
 })
 
-/**
- * Generates example logs that can be examined in the database and console.
- */
 function onTestLogger() {
   log.debug('This is a Debug Log', { name: 'Debug' })
   log.info('This is an Info Log', { name: 'Info' })
@@ -72,22 +67,16 @@ function onTestLogger() {
   log.error('This is an Error Log', { name: 'Error' })
 }
 
-/**
- * Called when a file has been rejected by the input.
- * @param entries
- */
+// Called when a file has been rejected by the input
 function onRejectedFile(entries: any) {
   const fileName = entries[0]?.importFile?.name || undefined
   log.warn(`Cannot import"${fileName}`, entries)
 }
 
-/**
- * On confirmation, imports your data from a JSON file.
- */
 function onImportFile() {
   confirmDialog(
     'Import',
-    `Import backup data from ${importFile?.value?.name} and attempt to load records into the database from it?`,
+    `Import backup data from ${importFile?.value?.name} and attempt to load records into the database from it? Please note that Logs are NOT imported.`,
     Icon.INFO,
     'info',
     async () => {
@@ -96,27 +85,26 @@ function onImportFile() {
 
         log.silentDebug('backupData:', backupData)
 
-        // Do NOT allow importing data from another app
         if (backupData.appName !== AppName) {
-          throw new Error(`Cannot import data from this app: ${backupData.appName} `)
+          throw new Error(`Cannot import data from the app ${backupData.appName}`)
         }
 
-        // Never import logs, settings is handled next if included
-        const types = Object.values(Type).filter(
-          (type) => type !== Type.LOG && type !== Type.SETTING
-        )
-
         // Import settings first in case errors stop type importing below
-        if (backupData[Type.SETTING].length > 0) {
-          // Settings must be explicitly set to be updated
+        if (backupData.settings.length > 0) {
           await Promise.all(
-            backupData[Type.SETTING]
-              .filter((s) => Object.values(Key).includes(s.key as Key))
-              .map(async (s) => await DB.setSetting(s.key as Key, s.value))
+            backupData.settings
+              .filter((s) => Object.values(SettingKey).includes(s.key as SettingKey))
+              .map(async (s) => await DB.setSetting(s.key as SettingKey, s.value))
           )
         }
 
-        await Promise.all(types.map((type) => DB.importRecords(type, backupData[type])))
+        // Logs are never imported
+        await Promise.all([
+          DB.importParents(backupData.parents),
+          DB.importChildren(backupData.children),
+        ])
+
+        await DB.updateAllParentLastChild()
 
         importFile.value = null // Clear input
         log.info('Successfully imported available data')
@@ -127,45 +115,32 @@ function onImportFile() {
   )
 }
 
-/**
- * On confirmation, exports your records as a JSON file.
- */
 function onExportRecords() {
-  // Build export file name
   const appNameSlug = AppName.toLowerCase().split(' ').join('-')
   const date = new Date().toISOString().split('T')[0]
   const filename = `export-${appNameSlug}-${date}.json`
 
   confirmDialog(
     'Export',
-    `Export all selected record types into the file ${filename}?`,
+    `Export all data into the file "${filename}" as a backup?`,
     Icon.INFO,
     'info',
     async () => {
       try {
-        const types = exportModel.value
-
-        const getTypeData = async (type: Type) => {
-          return types.includes(type) ? await DB.getAll(type) : []
-        }
-
-        // Build backup data
         const backupData = {
           appName: AppName,
           backupTimestamp: Date.now(),
-          [Type.LOG]: await getTypeData(Type.LOG),
-          [Type.SETTING]: await getTypeData(Type.SETTING),
-          [Type.WORKOUT]: await getTypeData(Type.WORKOUT),
-          [Type.EXERCISE]: await getTypeData(Type.EXERCISE),
-          [Type.MEASUREMENT]: await getTypeData(Type.MEASUREMENT),
-          [Type.WORKOUT_RESULT]: await getTypeData(Type.WORKOUT_RESULT),
-          [Type.EXERCISE_RESULT]: await getTypeData(Type.EXERCISE_RESULT),
-          [Type.MEASUREMENT_RESULT]: await getTypeData(Type.MEASUREMENT_RESULT),
+          logs: await DB.getLogs(),
+          settings: await DB.getSettings(),
+          parents: (await DB.getParents()).map((p) => {
+            delete p.lastChild
+            return p
+          }),
+          children: await DB.getChildren(),
         } as BackupData
 
         log.silentDebug('backupData:', backupData)
 
-        // Attempt to download the export records as a JSON file
         const fileStatus = exportFile(filename, JSON.stringify(backupData), {
           encoding: 'UTF-8',
           mimeType: 'application/json',
@@ -183,23 +158,16 @@ function onExportRecords() {
   )
 }
 
-/**
- * Updates the log retention time in the database.
- * @param logRetentionIndex
- */
 async function onChangeLogRetention(logRetentionIndex: number) {
   try {
     const logRetentionTime = Object.values(LogRetention)[logRetentionIndex]
-    await DB.setSetting(Key.LOG_RETENTION_TIME, logRetentionTime)
+    await DB.setSetting(SettingKey.LOG_RETENTION_TIME, logRetentionTime)
     log.info('Updated log retention time', { time: logRetentionTime, index: logRetentionIndex })
   } catch (error) {
     log.error('Log retention update failed', error)
   }
 }
 
-/**
- * On confirmation, reset all your app Settings.
- */
 async function onResetSettings() {
   confirmDialog(
     'Reset Settings',
@@ -217,11 +185,7 @@ async function onResetSettings() {
   )
 }
 
-/**
- * On confirmation, deletes all records of a specified type.
- * @param type
- */
-async function onDeleteBy(label: string, type: Type) {
+async function onDeleteBy(label: string, optionValue: string[]) {
   confirmDialog(
     `Delete ${label}`,
     `Permanetly delete all ${label} from the database?`,
@@ -229,8 +193,27 @@ async function onDeleteBy(label: string, type: Type) {
     'negative',
     async () => {
       try {
-        await DB.clearByType(type)
-        log.info(`${type} successfully deleted`)
+        switch (optionValue[0]) {
+          case 'internal':
+            if (optionValue[1] === 'logs') {
+              await DB.clearLogs()
+            } else if (optionValue[1] === 'settings') {
+              await DB.resetSettings()
+            } else {
+              throw new Error(`Unknown internal type ${optionValue[1]}`)
+            }
+            break
+          case 'parent':
+            await DB.clearParentsByType(optionValue[1] as Type)
+            break
+          case 'child':
+            await DB.clearChildrenByType(optionValue[1] as Type)
+            break
+          default:
+            throw new Error(`Unknown type ${optionValue[0]}`)
+        }
+
+        log.info('Successfully deleted selected data')
       } catch (error) {
         log.error(`Error deleting ${label}`, error)
       }
@@ -238,9 +221,6 @@ async function onDeleteBy(label: string, type: Type) {
   )
 }
 
-/**
- * On confirmation, deletes all records of any type from the database. Re-initializes the settings.
- */
 async function onDeleteAll() {
   confirmDialog(
     'Delete All',
@@ -249,7 +229,10 @@ async function onDeleteAll() {
     'negative',
     async () => {
       try {
-        await DB.clearAllData()
+        await DB.clearLogs()
+        await DB.resetSettings()
+        await DB.clearParents()
+        await DB.clearChildren()
         log.info('All data successfully deleted')
       } catch (error) {
         log.error('Error deleting all data', error)
@@ -258,9 +241,6 @@ async function onDeleteAll() {
   )
 }
 
-/**
- * On confirmation, completely deletes the database and all of its data (must reload the app after).
- */
 async function onDeleteDatabase() {
   confirmDialog(
     'Delete Database',
@@ -278,23 +258,43 @@ async function onDeleteDatabase() {
   )
 }
 
-/**
- * Returns value of setting from the live ref.
- * @param key
- */
-function getSettingValue(key: Key) {
+function onAccessData(optionValue: string[]) {
+  try {
+    switch (optionValue[0]) {
+      case 'internal':
+        if (optionValue[1] === 'logs') {
+          goToLogsData()
+        } else if (optionValue[1] === 'settings') {
+          goToSettingsData()
+        } else {
+          throw new Error(`Unknown internal type ${optionValue[1]}`)
+        }
+        break
+      case 'parent':
+        goToParentData(optionValue[1] as Type)
+        break
+      case 'child':
+        goToChildData(optionValue[1] as Type)
+        break
+      default:
+        throw new Error(`Unknown type ${optionValue[0]}`)
+    }
+  } catch (error) {
+    log.error('Error accessing data table', error)
+  }
+}
+
+function getSettingValue(key: SettingKey) {
   return settings.value.find((s) => s.key === key)?.value
 }
 
-/**
- * Updates the user height in the database when the input is valid.
- */
 async function updateHeight() {
-  const isValid = !!heightInputRef?.value?.validate()
-
-  if (isValid) {
-    await DB.setSetting(Key.USER_HEIGHT, heightInches.value)
+  if (!(await heightValidator.isValid(heightInches.value))) {
+    heightInches.value = null
   }
+
+  // Saves even if height is null
+  await DB.setSetting(SettingKey.USER_HEIGHT, heightInches.value)
 }
 </script>
 
@@ -306,18 +306,15 @@ async function updateHeight() {
         <div class="text-h6 q-mb-md">User Information</div>
 
         <p>
-          Your height is used for the BMI calculation when updating your body weight. Height will
-          default to 70 inches if not provided. For reference, a height of 5'10" is equal to 70
-          inches.
+          Your height is used for the BMI calculation when updating your body weight. This field is
+          optional. For reference, 6 feet is 72 inches (12 inches per foot).
         </p>
 
         <p class="text-h6">Height</p>
 
-        <!-- Note: v-model.number for number types -->
         <QInput
-          v-model.number="heightInches"
+          v-model="heightInches"
           ref="heightInputRef"
-          :rules="[(val: number) => (val >= 1 && val <= 120) || 'Must be 1-120 or blank']"
           hint="Auto Saved"
           type="number"
           placeholder="Total Inches"
@@ -329,7 +326,6 @@ async function updateHeight() {
       </QCardSection>
     </QCard>
 
-    <!-- Options -->
     <QCard class="q-mb-md">
       <QCardSection>
         <p class="text-h6">Options</p>
@@ -345,8 +341,8 @@ async function updateHeight() {
           </p>
           <QToggle
             label="Show Welcome Overlay"
-            :model-value="getSettingValue(Key.SHOW_WELCOME)"
-            @update:model-value="DB.setSetting(Key.SHOW_WELCOME, $event)"
+            :model-value="getSettingValue(SettingKey.SHOW_WELCOME)"
+            @update:model-value="DB.setSetting(SettingKey.SHOW_WELCOME, $event)"
           />
         </div>
 
@@ -354,8 +350,8 @@ async function updateHeight() {
           <p>Show descriptions for records displayed on the Dashboard page.</p>
           <QToggle
             label="Show Dashboard Descriptions"
-            :model-value="getSettingValue(Key.SHOW_DESCRIPTIONS)"
-            @update:model-value="DB.setSetting(Key.SHOW_DESCRIPTIONS, $event)"
+            :model-value="getSettingValue(SettingKey.SHOW_DESCRIPTIONS)"
+            @update:model-value="DB.setSetting(SettingKey.SHOW_DESCRIPTIONS, $event)"
           />
         </div>
 
@@ -363,14 +359,13 @@ async function updateHeight() {
           <p>Dark mode allows you to switch between a light or dark theme for the app.</p>
           <QToggle
             label="Dark Mode"
-            :model-value="getSettingValue(Key.DARK_MODE)"
-            @update:model-value="DB.setSetting(Key.DARK_MODE, $event)"
+            :model-value="getSettingValue(SettingKey.DARK_MODE)"
+            @update:model-value="DB.setSetting(SettingKey.DARK_MODE, $event)"
           />
         </div>
       </QCardSection>
     </QCard>
 
-    <!-- Defaults -->
     <QCard class="q-mb-md">
       <QCardSection>
         <p class="text-h6">Defaults</p>
@@ -414,7 +409,6 @@ async function updateHeight() {
       </QCardSection>
     </QCard>
 
-    <!-- Data Management -->
     <QCard class="q-mb-md">
       <QCardSection>
         <p class="text-h6">Data Management</p>
@@ -451,22 +445,10 @@ async function updateHeight() {
 
         <div class="q-mb-md">
           <p>
-            Export the selected data types as a JSON file. Do this on a regularly basis so you have
-            a backup of your data.
+            Export your data as a JSON file. Do this on a regularly basis so you have a backup of
+            your data.
           </p>
-          <QOptionGroup
-            class="q-mb-md"
-            v-model="exportModel"
-            :options="exportOptions"
-            type="checkbox"
-            inline
-          />
-          <QBtn
-            :disable="exportModel.length === 0"
-            label="Export"
-            color="primary"
-            @click="onExportRecords()"
-          />
+          <QBtn label="Export" color="primary" @click="onExportRecords()" />
         </div>
 
         <div class="q-mb-md">
@@ -483,7 +465,7 @@ async function updateHeight() {
                 :disable="!accessModel"
                 label="Access Data"
                 color="primary"
-                @click="goToData(accessModel.value)"
+                @click="onAccessData(accessModel.value)"
               />
             </template>
           </QSelect>
@@ -491,7 +473,6 @@ async function updateHeight() {
       </QCardSection>
     </QCard>
 
-    <!-- Logging -->
     <QCard class="q-mb-md">
       <QCardSection>
         <p class="text-h6">Logging</p>
@@ -500,8 +481,8 @@ async function updateHeight() {
           <p>Show Console Logs will display all log messages in the browser console.</p>
           <QToggle
             label="Show Console Logs"
-            :model-value="getSettingValue(Key.SHOW_CONSOLE_LOGS)"
-            @update:model-value="DB.setSetting(Key.SHOW_CONSOLE_LOGS, $event)"
+            :model-value="getSettingValue(SettingKey.SHOW_CONSOLE_LOGS)"
+            @update:model-value="DB.setSetting(SettingKey.SHOW_CONSOLE_LOGS, $event)"
           />
         </div>
 
@@ -509,8 +490,8 @@ async function updateHeight() {
           <p>Show Info Messages will display info level notifications.</p>
           <QToggle
             label="Show Info Messages"
-            :model-value="getSettingValue(Key.SHOW_INFO_MESSAGES)"
-            @update:model-value="DB.setSetting(Key.SHOW_INFO_MESSAGES, $event)"
+            :model-value="getSettingValue(SettingKey.SHOW_INFO_MESSAGES)"
+            @update:model-value="DB.setSetting(SettingKey.SHOW_INFO_MESSAGES, $event)"
           />
         </div>
 
@@ -528,22 +509,24 @@ async function updateHeight() {
             functions retroactivley, so if you change the time to 3 months, all logs older than 3
             months will be deleted. Expired log processing occurs every time the app is loaded.
           </p>
-          <QSlider
-            v-model="logRetentionIndex"
-            :label-value="Object.values(LogRetention)[logRetentionIndex]"
-            color="primary"
-            markers
-            label-always
-            switch-label-side
-            :min="0"
-            :max="Object.values(LogRetention).length - 1"
-            @change="(index) => onChangeLogRetention(index)"
-          />
+
+          <div class="q-mx-lg">
+            <QSlider
+              v-model="logRetentionIndex"
+              :label-value="Object.values(LogRetention)[logRetentionIndex]"
+              color="primary"
+              markers
+              label-always
+              switch-label-side
+              :min="0"
+              :max="Object.values(LogRetention).length - 1"
+              @change="(index) => onChangeLogRetention(index)"
+            />
+          </div>
         </div>
       </QCardSection>
     </QCard>
 
-    <!-- DANGER ZONE -->
     <QCard class="q-mb-md">
       <QCardSection>
         <p class="text-h6 text-negative">DANGER ZONE</p>

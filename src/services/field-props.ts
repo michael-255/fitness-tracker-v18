@@ -21,7 +21,7 @@ import {
 } from '@/services/validators'
 import {
   Field,
-  Key,
+  SettingKey,
   Severity,
   type FieldProps,
   MeasurementInput,
@@ -115,7 +115,7 @@ const keyField: Readonly<FieldProps> = {
   getDefault: () => undefined,
   validator: keyValidator,
   validationMessage: 'Invalid',
-  inspectFormat: (val: Key) => `${val || '-'}`,
+  inspectFormat: (val: SettingKey) => `${val || '-'}`,
   // Not rendered
 }
 
@@ -411,7 +411,7 @@ const resistanceField: Readonly<FieldProps> = {
 ///////////////////////////////////////////////////////////////////////////////
 
 const heightWeightLbsField: Readonly<FieldProps> = {
-  field: Field.HEIGHT_WEIGHT_LBS,
+  field: Field.HEIGHT_WEIGHT,
   label: 'Body Weight (lbs)', // Stored with height in the database
   getDefault: () => [0, 0],
   validator: heightWeightValidator,

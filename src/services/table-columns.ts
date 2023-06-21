@@ -1,12 +1,7 @@
-import { ExerciseInput, Field, Key, MeasurementInput, Severity } from '@/types/database'
+import { ExerciseInput, Field, SettingKey, MeasurementInput, Severity } from '@/types/database'
 import { truncateString, getDisplayDate } from '@/utils/common'
 import type { QTableColumn } from 'quasar'
 
-/**
- * Creates standard properties for a QTable column.
- * @param field
- * @param required
- */
 function makeStandardColumn(field: any, required: boolean = false) {
   return {
     name: field,
@@ -17,11 +12,7 @@ function makeStandardColumn(field: any, required: boolean = false) {
   } as QTableColumn
 }
 
-/**
- * Creates required properties for a hidden QTable column.
- * @param field
- * @param name
- */
+// For hidden required porperties
 function makeHiddenColumn(field: any, name: string) {
   return {
     name,
@@ -41,11 +32,7 @@ function makeHiddenColumn(field: any, name: string) {
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-/**
- * Hidden Auto Id column required for some table actions. Hiding saves horizontal space on the data table.
- * @example
- * action(props.cols[0]) // <-- index!
- */
+// Access in QTable via props.cols[0]
 const hiddenAutoIdColumn: Readonly<QTableColumn> = {
   ...makeHiddenColumn(Field.AUTO_ID, 'hiddenAutoId'),
 }
@@ -95,13 +82,13 @@ const stackColumn: Readonly<QTableColumn> = {
 const keyColumn: Readonly<QTableColumn> = {
   ...makeStandardColumn(Field.KEY),
   label: 'Key',
-  format: (val: Key) => `${val}`,
+  format: (val: SettingKey) => `${val}`,
 }
 
 const valueColumn: Readonly<QTableColumn> = {
   ...makeStandardColumn(Field.VALUE),
   label: 'Value',
-  format: (val: Key) => truncateString(JSON.stringify(val), 40, '...'),
+  format: (val: SettingKey) => truncateString(JSON.stringify(val), 40, '...'),
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -110,11 +97,7 @@ const valueColumn: Readonly<QTableColumn> = {
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-/**
- * Hidden Id column required for some table actions. Hiding saves horizontal space on the data table.
- * @example
- * action(props.cols[0]) // <-- index!
- */
+// Access in QTable via props.cols[0]
 const hiddenIdColumn: Readonly<QTableColumn> = {
   ...makeHiddenColumn(Field.ID, 'hiddenId'),
 }
@@ -300,7 +283,7 @@ const resistanceColumn: Readonly<QTableColumn> = {
 ///////////////////////////////////////////////////////////////////////////////
 
 const heightWeightLbsColumn: Readonly<QTableColumn> = {
-  ...makeStandardColumn(Field.HEIGHT_WEIGHT_LBS),
+  ...makeStandardColumn(Field.HEIGHT_WEIGHT),
   label: 'Height/Weight (lbs)',
   format: (val: number[]) => val?.join(', '),
 }
