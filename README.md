@@ -6,14 +6,14 @@ device.
 
 ## TODOs
 
-NEW TASKS:
+TASKS:
 
-- [ ] Move over changes from refactored `Web App Template` project!
+- [ ] Go through the app a make a list of tasks to do
 
 STRETCH FEATURES:
 
-- Reserved ids for default records
-- Encrypt export data option
+- [ ] Reserved ids for default records
+- [ ] Encrypt export data option
 
 ## Table of Contents
 
